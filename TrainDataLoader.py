@@ -48,10 +48,11 @@ class TrainDataLoader:
         self.load_synth_data(7000) 
 
     def load_synth_data(self, num_images):
-        ann_file = os.path.join(self.synth_data_loc, 'Annotation', 'synthvid_ann.hdf5')
+        ann_file = os.path.join(self.synth_data_loc, 'Annotations', 'synthvid_ann.hdf5')
         frames_dir = os.path.join(self.synth_data_loc, 'Frames')
         train_files = get_det_annotations(ann_file)
         
-        print(train_files.shape)
+        for k, v in train_files:
+            print(v['para_ann'].shape)
         
         
