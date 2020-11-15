@@ -9,6 +9,8 @@ from datasets import smallnorb, mnist, svhn
 from evaluate import evaluate
 from train import train
 
+from TrainDataLoader import TrainDataLoader
+
 
 warnings.filterwarnings("ignore")
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -27,7 +29,7 @@ torch.cuda.manual_seed_all(seed)
 def main(args):
 
     ''' --------------------------- LOAD DATA -------------------------------'''
-
+    '''
     if args.dataset == 'smallnorb':
         dataset = 'smallNORB_48'
         working_dir = os.path.join(os.path.split(os.getcwd())[0], 'data', dataset)
@@ -66,6 +68,9 @@ def main(args):
 
     assert args.arch[-1] == args.n_classes, \
         'Set number of capsules in last layer to number of classes using --arch flag.'
+    '''
+        
+    dataloader = TrainDataLoader()
 
     ''''----------------------- EXPERIMENT CONFIG ---------------------------'''
 
