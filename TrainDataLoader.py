@@ -5,8 +5,9 @@ import numpy as np
 import os
 import random
 
-from scipy.misc import imread
 from PIL import Image, ImageDraw
+from scipy.misc import imread
+from tqdm import tqdm
 
 
 def get_det_annotations(ann_file, split='train'):
@@ -73,7 +74,8 @@ class TrainDataLoader:
         
         data = []
         
-        for k, v in train_files:
+        print('Loading Synthetic training data...')
+        for k, v in tqdm(train_files):
             num_frames = v['para_ann'].shape[0]
             image_nums = np.random.choice(num_frames, 2, replace=False)
             video_dir = os.path.join(frames_dir, k)
@@ -92,7 +94,7 @@ class TrainDataLoader:
                     frame = cv2.resize(frame, (w, h))
                     
                 mask = create_mask((h, w), v['para_ann'][image_num])
-                data.append(frame, mask)
+                data.append((frame, mask. 'synth'))
         
         return data
             
