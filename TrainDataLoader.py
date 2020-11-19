@@ -94,7 +94,7 @@ class TrainDataLoader:
                     frame = cv2.resize(frame, (w, h))
                     
                 mask = create_mask((h, w), v['para_ann'][image_num])
-                data.append((frame, mask. 'synth'))
+                data.append((frame, mask, 'synth'))
         
         return data
             
