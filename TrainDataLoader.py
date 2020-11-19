@@ -1,7 +1,12 @@
+
+import cv2
 import h5py
 import numpy as np
 import os
 import random
+
+from scipy.misc import imread
+from PIL import Image, ImageDraw
 
 
 def get_det_annotations(ann_file, split='train'):
@@ -42,17 +47,57 @@ def get_det_annotations(ann_file, split='train'):
         print("Num test samples:", len(test_split))
         return test_split
 
+
+def create_mask(shape, pts):
+    im = np.zeros(shape, dtype=np.uint8)
+    im = Image.fromarray(im, 'L')
+    draw = ImageDraw.Draw(im)
+    for bbox in pts:
+        draw.polygon(bbox.tolist(), fill=1)
+    del draw
+    
+    # cv2.imwrite('temp2.jpg', im)
+    # input()
+    return np.asarray(im)
+
 class TrainDataLoader:
     def __init__(self, total_images = 10000):
         self.synth_data_loc = '/mnt/data/Rohit/VideoCapsNet/code/SynthVideo/out'
-        self.load_synth_data(7000) 
+        synth_data = self.load_synth_data(7000) 
+        print(len(synth_data))
 
     def load_synth_data(self, num_images):
         ann_file = os.path.join(self.synth_data_loc, 'Annotations', 'synthvid_ann.hdf5')
-        frames_dir = os.path.join(self.synth_data_loc, 'Frames')
         train_files = get_det_annotations(ann_file)
+        frames_dir = os.path.join(self.synth_data_loc, 'Frames')
+        
+        data = []
         
         for k, v in train_files:
-            print(v['para_ann'].shape)
+            num_frames = v['para_ann'].shape[0]
+            image_nums = np.random.choice(num_frames, 2, replace=False)
+            video_dir = os.path.join(frames_dir, k)
+            
+            im0 = imread(os.path.join(video_dir, 'frame_%d.jpg' % 0))
+            h, w, ch = im0.shape
+            
+            for image_num in image_nums:
+                frame = imread(os.path.join(video_dir, 'frame_%d.jpg' % image_num))
+                
+                if (h, w, ch) != frame.shape:
+                    print('BAD FRAMES FOUND')
+                    print('Video:', video_dir)
+                    print('Frame:', image_num)
+                    print('*' * 20)
+                    frame = cv2.resize(frame, (w, h))
+                    
+                mask = create_mask((h, w), v['para_ann'][image_num])
+                data.append(frame, mask)
+        
+        return data
+            
+            
+if __name__ == "__main__":
+    dataloaders = TrainDataLoader()
         
         
