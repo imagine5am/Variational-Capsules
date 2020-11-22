@@ -208,7 +208,7 @@ class DataLoader:
         
         data = []
         
-        for video_name in tqdm(allfiles[:10]):
+        for video_name in tqdm(allfiles):
             ann_file = icdar_loc+video_name[:-4]+'_GT.xml'
             ann = parse_ann(ann_file)
 
