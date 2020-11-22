@@ -213,12 +213,14 @@ class DataLoader:
                 imshow(frame)
                 
                 if idx in ann and ann[idx]:
+                    print(f'ann[idx]: {ann[idx]}')
+                    print(f'ann[idx]: {ann[idx].values()}')
                     polygons = ann[idx]
                     frame_mask = create_mask((h, w), polygons.values())
                     mask_resized = resize_and_pad((h, w), frame_mask)
                     mask = np.expand_dims(mask_resized, axis=-1)
-                    imshow(frame_mask)
-                    print(f'frame_mask: {frame_mask.shape}')
+                    # imshow(frame_mask)
+                    # print(f'frame_mask: {frame_mask.shape}')
                     # print(f'mask_resized.shape: {mask_resized.shape}')
                     # print(f'mask.shape: {mask.shape}')
                 else:
