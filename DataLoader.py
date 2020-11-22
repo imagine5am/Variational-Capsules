@@ -100,6 +100,7 @@ def create_mask(shape, pts):
     mask = Image.fromarray(mask, 'L')
     draw = ImageDraw.Draw(mask)
     for pt in pts:
+        print(pt)
         draw.polygon(pt, fill=1)
     del draw
     show(mask)
