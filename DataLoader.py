@@ -95,23 +95,14 @@ def get_det_annotations(ann_file, split='train'):
 
 
 def create_mask(shape, pts):
-    im = np.zeros(shape, dtype=np.uint8)
-    im = Image.fromarray(im, 'L')
-    draw = ImageDraw.Draw(im)
-    
-    for bbox in pts:
-        print(type(bbox))
-        print(bbox)
-        draw.polygon(bbox, fill=1)
+    mask = np.zeros(shape, dtype=np.uint8)
+    mask = Image.fromarray(mask, 'L')
+    draw = ImageDraw.Draw(mask)
+    for pt in pts:
+        draw.polygon(pt, fill=1)
     del draw
-    
-    # cv2.imwrite('temp2.jpg', im)
-    # input()
-    im = np.asarray(im).copy()
-    
-    print(np.any(im))
-    
-    return im
+    mask = np.asarray(mask).copy()
+    return mask
 
 
 def list_vids(dir):
