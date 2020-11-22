@@ -101,9 +101,10 @@ def create_mask(shape, pts):
     draw = ImageDraw.Draw(mask)
     for pt in pts:
         if isinstance(pt, np.ndarray):
-            print(f'type: np.ndarray | pt: {pt}')
+            print(f'type: {type(pt)} | pt: {pt.tolist()}')
             # draw.polygon(pt.tolist(), fill=1)
         else:
+            print(f'type: {type(pt)} | pt: {pt}')
             draw.polygon(pt, fill=1)
     del draw
     # show(mask)
