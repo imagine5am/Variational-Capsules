@@ -204,7 +204,7 @@ class DataLoader:
             ann_file = icdar_loc+video_name[:-4]+'_GT.xml'
             ann = parse_ann(ann_file)
 
-            video_orig = skvideo.io.vread(icdar_loc+video_name)
+            video_orig = skvideo.io.vread(os.path.join(icdar_loc, video_name))
             num_frames, h, w, _ = video_orig.shape
             chosen_frames = np.random.choice(num_frames, num_frames//selection_ratio, replace=False)
             
@@ -213,11 +213,12 @@ class DataLoader:
                 
                 if idx in ann and ann[idx]:
                     polygons = ann[idx]
-                    frame_mask = create_mask((h, w), list(polygons.values()))
+                    frame_mask = create_mask((h, w), polygons.values())
                     mask_resized = resize_and_pad((h, w), frame_mask)
-                    print(f'mask_resized.size: {mask_resized.shape}')
                     mask = np.expand_dims(mask_resized, axis=-1)
-                    print(f'mask.size: {mask.shape}')
+                    print(f'frame_mask: {frame_mask.shape}')
+                    print(f'mask_resized.shape: {mask_resized.shape}')
+                    print(f'mask.shape: {mask.shape}')
                 else:
                     mask = np.zeros((out_h, out_w, 1), dtype=np.uint8)
                 
