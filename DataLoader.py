@@ -86,11 +86,11 @@ def get_det_annotations(ann_file, split='train'):
         train_split = polygon_ann[:num_train_samples]
         random.seed()
         random.shuffle(train_split)
-        print("Num train samples:", len(train_split))
+        print(f'Num of synthetic train videos: {len(train_split)}')
         return train_split
     elif split == 'test':
         test_split = polygon_ann[-num_test_samples:]
-        print("Num test samples:", len(test_split))
+        print(f'Num of synthetic test videos: {len(test_split)}')
         return test_split
 
 
