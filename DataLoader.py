@@ -13,14 +13,8 @@ from scipy.misc import imread, imsave, imshow
 from tqdm import tqdm
 
 out_h, out_w = 480, 480
-
-def save_masked_video(name, video, mask):
-    alpha = 0.5
-    color = np.zeros((3,)) + [0.0, 0, 1.0]
-    masked_vid = np.where(np.tile(mask, [1, 1, 3]) == 1, video * (1 - alpha) + alpha * color, video)
-    skvideo.io.vwrite(name+'_segmented.avi', (masked_vid * 255).astype(np.uint8))
-
 debug_dir = './debug'
+
 
 def order_points(pts):
     # bottom-right, and the fourth is the bottom-left
@@ -72,9 +66,9 @@ def get_det_annotations(ann_file, split='train'):
                 k = label + '/' + file
                 v = {'label': int(label),
                      #'char_ann': np.rint(np.array(file_grp.get('char_ann')[()])).astype(np.int32),
-                     #'word_ann': np.rint(np.array(file_grp.get('word_ann')[()])).astype(np.int32),
+                     'word_ann': np.rint(np.array(file_grp.get('word_ann')[()])).astype(np.int32),
                      #'line_ann': np.rint(np.array(file_grp.get('line_ann')[()])).astype(np.int32),
-                     'para_ann': np.rint(np.array(file_grp.get('para_ann')[()])).astype(np.int32)
+                     #'para_ann': np.rint(np.array(file_grp.get('para_ann')[()])).astype(np.int32)
                     }
                 polygon_ann.append((k, v))
     random.seed(7)
@@ -100,15 +94,13 @@ def create_mask(shape, pts):
     mask = Image.fromarray(mask, 'L')
     draw = ImageDraw.Draw(mask)
     
-    debug = True
+    debug = False
     fill_val = 255 if debug else 1
     
     for pt in pts:
         if isinstance(pt, np.ndarray):
-            #print(f'type: {type(pt)} | pt: {pt.tolist()}')
             draw.polygon(pt.tolist(), fill=fill_val)
         else:
-            #print(f'type: {type(pt)} | pt: {pt}')
             draw.polygon(pt, fill=fill_val)
     del draw
     # show(mask)
@@ -157,6 +149,8 @@ class DataLoader:
             self.debug_data(synth_data=synth_data, icdar_data=icdar_data)
             # self.debug_data(icdar_data=icdar_data)
         
+        self.data = random.shuffle(synth_data + icdar_data)
+        
 
     def load_synth_data(self, split_type='train'):
         synth_data_loc = '/mnt/data/Rohit/VideoCapsNet/code/SynthVideo/out'
@@ -169,7 +163,7 @@ class DataLoader:
         
         print('Loading Synthetic training data...')
         for k, v in tqdm(train_files):
-            num_frames = v['para_ann'].shape[0]
+            num_frames = v['word_ann'].shape[0]
             image_nums = np.random.choice(num_frames, 2, replace=False)
             video_dir = os.path.join(frames_dir, k)
             
@@ -186,7 +180,7 @@ class DataLoader:
                     print('*' * 20)
                     frame = cv2.resize(frame, (w, h))
                     
-                mask = create_mask((h, w), v['para_ann'][image_num])
+                mask = create_mask((h, w), v['word_ann'][image_num])
                 
                 frame_resized = resize_and_pad((h, w), frame)
                 mask_resized = resize_and_pad((h, w), mask)
@@ -227,7 +221,7 @@ class DataLoader:
                     mask = np.expand_dims(mask_resized, axis=-1)
                     # imshow(frame_mask)
                 else:
-                    print(f'ann not in {idx} - {video_name}')
+                    # print(f'ann not in {idx} - {video_name}')
                     mask = np.zeros((out_h, out_w, 1), dtype=np.uint8)
                 
                 data.append((frame, mask, 'icdar'))    
