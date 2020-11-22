@@ -225,14 +225,12 @@ class DataLoader:
     
     
     def debug_data(self, synth_data=None, icdar_data=None):
-        os.makedirs(debug_dir, mode = 0o777, exist_ok = False)
         sample_size = 100
         apply_mask = False
         
         if synth_data:
             synth_samples = np.random.choice(len(synth_data), sample_size, replace=False)
             base_loc = os.path.join(debug_dir, 'synth')
-            os.makedirs(base_loc, mode = 0o777, exist_ok = False)
             
             for idx in synth_samples:
                 frame, mask, _ = synth_data[idx]
@@ -249,7 +247,6 @@ class DataLoader:
         if icdar_data:
             synth_samples = np.random.choice(len(icdar_data), sample_size, replace=False)
             base_loc = os.path.join(debug_dir, 'icdar')
-            os.makedirs(base_loc, mode = 0o777, exist_ok = False)
             
             for idx in synth_samples:
                 frame, mask, _ = icdar_data[idx]
