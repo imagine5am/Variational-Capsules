@@ -195,10 +195,10 @@ class TrainDataLoader:
             video_orig = skvideo.io.vread(icdar_loc+video_name)
             num_frames, h, w, _ = video_orig.shape
             print('num_frames:', num_frames)
-            chosen_images = np.random.choice(num_frames, num_frames//10, replace=False)
-            print('chosen_images:', chosen_images)
+            chosen_frames = np.random.choice(num_frames, num_frames//10, replace=False)
+            print('chosen_frames:', chosen_frames)
             
-            for idx in range(chosen_images):
+            for idx in chosen_frames:
                 frame = resize_and_pad((h, w), video_orig[idx])
                 print('frame.shape:', frame.shape)
                 print('frame.dtype:', frame.dtype)
