@@ -8,7 +8,7 @@ import skvideo.io
 import xml.etree.ElementTree as ET
 
 from PIL import Image, ImageDraw
-from scipy.misc import imread
+from scipy.misc import imread, imsave
 from tqdm import tqdm
 
 out_h, out_w = 480, 480
@@ -19,6 +19,7 @@ def save_masked_video(name, video, mask):
     masked_vid = np.where(np.tile(mask, [1, 1, 3]) == 1, video * (1 - alpha) + alpha * color, video)
     skvideo.io.vwrite(name+'_segmented.avi', (masked_vid * 255).astype(np.uint8))
 
+debug_dir = './debug'
 
 def order_points(pts):
     # bottom-right, and the fourth is the bottom-left
@@ -134,21 +135,25 @@ def parse_ann(file):
     return ann
 
 
-class TrainDataLoader:
-    def __init__(self, total_images = 10000):
-        self.synth_data_loc = '/mnt/data/Rohit/VideoCapsNet/code/SynthVideo/out'
-        #synth_data = self.load_synth_data(7000) 
+class DataLoader:
+    def __init__(self, split_type='train', debug=True):
+        np.random.seed(7)
+        
+        synth_data = self.load_synth_data() 
         icdar_data = self.load_icdar_data() # 25 videos 
-        #print(len(synth_data))
+        print(len(synth_data))
         print(len(icdar_data))
-        print(icdar_data[0][0].shape)
-        print(icdar_data[0][1].shape)
+        
+        if debug:
+            self.debug_data(synth_data=synth_data, icdar_data=icdar_data)
         
 
-    def load_synth_data(self, num_images):
-        ann_file = os.path.join(self.synth_data_loc, 'Annotations', 'synthvid_ann.hdf5')
-        train_files = get_det_annotations(ann_file)
-        frames_dir = os.path.join(self.synth_data_loc, 'Frames')
+    def load_synth_data(self, split_type='train'):
+        synth_data_loc = '/mnt/data/Rohit/VideoCapsNet/code/SynthVideo/out'
+        
+        ann_file = os.path.join(synth_data_loc, 'Annotations', 'synthvid_ann.hdf5')
+        train_files = get_det_annotations(ann_file, split_type)
+        frames_dir = os.path.join(synth_data_loc, 'Frames')
         
         data = []
         
@@ -183,6 +188,7 @@ class TrainDataLoader:
         elif split_type=='test':
             icdar_loc = '/mnt/data/Rohit/ICDARVideoDataset/text_in_Video/ch3_test/'
         
+        selection_ratio = 10
         allfiles = list_vids(icdar_loc)
         random.shuffle(allfiles)
         
@@ -195,13 +201,11 @@ class TrainDataLoader:
             video_orig = skvideo.io.vread(icdar_loc+video_name)
             num_frames, h, w, _ = video_orig.shape
             print('num_frames:', num_frames)
-            chosen_frames = np.random.choice(num_frames, num_frames//10, replace=False)
+            chosen_frames = np.random.choice(num_frames, num_frames//selection_ratio, replace=False)
             print('chosen_frames:', chosen_frames)
             
             for idx in chosen_frames:
                 frame = resize_and_pad((h, w), video_orig[idx])
-                print('frame.shape:', frame.shape)
-                print('frame.dtype:', frame.dtype)
                 
                 if idx in ann and ann[idx]:
                     polygons = ann[idx]
@@ -214,8 +218,45 @@ class TrainDataLoader:
                 data.append((frame, mask, 'icdar'))    
         
         return data
+    
+    def debug_data(self, synth_data=None, icdar_data=None):
+        sample_size = 100
+        apply_mask = False
+        
+        if synth_data:
+            synth_samples = np.random.choice(len(synth_data), sample_size, replace=False)
+            base_loc = os.path.join(debug_dir, 'synth')
+            
+            for idx in synth_samples:
+                frame, mask, _ = synth_data[idx]
+                
+                if apply_mask:
+                    save_loc = os.path.join(base_loc, str(idx)+'_applied_mask.jpg')
+                    imsave(save_loc, frame * mask)
+                else:
+                    frame_save_loc = os.path.join(base_loc, str(idx)+'_frame.jpg')
+                    mask_save_loc = os.path.join(base_loc, str(idx)+'_mask.jpg')
+                    imsave(frame_save_loc, frame)
+                    imsave(mask_save_loc, mask)
+                    
+        if icdar_data:
+            synth_samples = np.random.choice(len(icdar_data), sample_size, replace=False)
+            base_loc = os.path.join(debug_dir, 'icdar')
+            
+            for idx in synth_samples:
+                frame, mask, _ = synth_data[idx]
+                
+                if apply_mask:
+                    save_loc = os.path.join(base_loc, str(idx)+'_applied_mask.jpg')
+                    imsave(save_loc, frame * mask)
+                else:
+                    frame_save_loc = os.path.join(base_loc, str(idx)+'_frame.jpg')
+                    mask_save_loc = os.path.join(base_loc, str(idx)+'_mask.jpg')
+                    imsave(frame_save_loc, frame)
+                    imsave(mask_save_loc, mask)
+
             
 if __name__ == "__main__":
-    dataloaders = TrainDataLoader()
+    dataloaders = DataLoader()
         
         
