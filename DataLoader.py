@@ -8,6 +8,7 @@ import skvideo.io
 import xml.etree.ElementTree as ET
 
 from PIL import Image, ImageDraw
+from PIL.ImageShow import show
 from scipy.misc import imread, imsave, imshow
 from tqdm import tqdm
 
@@ -101,6 +102,7 @@ def create_mask(shape, pts):
     for pt in pts:
         draw.polygon(pt, fill=1)
     del draw
+    show(mask)
     mask = np.asarray(mask).copy()
     return mask
 
