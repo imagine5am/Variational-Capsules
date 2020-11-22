@@ -206,7 +206,6 @@ class DataLoader:
             video_orig = skvideo.io.vread(os.path.join(icdar_loc, video_name))
             num_frames, h, w, _ = video_orig.shape
             chosen_frames = np.random.choice(num_frames, num_frames//selection_ratio, replace=False)
-            print(chosen_frames)
             
             for idx in chosen_frames:
                 frame = resize_and_pad((h, w), video_orig[idx])
@@ -261,6 +260,8 @@ class DataLoader:
                     frame_save_loc = os.path.join(base_loc, str(idx)+'_frame.jpg')
                     mask_save_loc = os.path.join(base_loc, str(idx)+'_mask.jpg')
                     imsave(frame_save_loc, frame)
+                    print(f'mask.shape: {mask.shape}')
+                    print(f'mask.dtype: {mask.dtype}')
                     imsave(mask_save_loc, mask)
 
             
