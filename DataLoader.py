@@ -215,9 +215,9 @@ class DataLoader:
                     polygons = ann[idx]
                     frame_mask = create_mask((h, w), list(polygons.values()))
                     mask_resized = resize_and_pad((h, w), frame_mask)
-                    print(f'mask_resized.size: {mask_resized.size}')
+                    print(f'mask_resized.size: {mask_resized.shape}')
                     mask = np.expand_dims(mask_resized, axis=-1)
-                    print(f'mask.size: {mask.size}')
+                    print(f'mask.size: {mask.shape}')
                 else:
                     mask = np.zeros((out_h, out_w, 1), dtype=np.uint8)
                 
