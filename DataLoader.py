@@ -105,7 +105,11 @@ def create_mask(shape, pts):
     
     # cv2.imwrite('temp2.jpg', im)
     # input()
-    return np.asarray(im).copy()
+    im = np.asarray(im).copy()
+    
+    print(np.any(im))
+    
+    return im
 
 
 def list_vids(dir):
@@ -213,9 +217,6 @@ class DataLoader:
                 # imshow(frame)
                 
                 if idx in ann and ann[idx]:
-                    print(f'ann[idx]: {ann[idx]}')
-                    print(f'ann[idx].values(): {ann[idx].values()}')
-                    print(f'list(ann[idx].values()): {list(ann[idx].values())}')
                     polygons = list(ann[idx].values())
                     frame_mask = create_mask((h, w), polygons)
                     mask_resized = resize_and_pad((h, w), frame_mask)
