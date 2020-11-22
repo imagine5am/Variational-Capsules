@@ -99,13 +99,17 @@ def create_mask(shape, pts):
     mask = np.zeros(shape, dtype=np.uint8)
     mask = Image.fromarray(mask, 'L')
     draw = ImageDraw.Draw(mask)
+    
+    debug = True
+    fill_val = 255 if debug else 1
+    
     for pt in pts:
         if isinstance(pt, np.ndarray):
             #print(f'type: {type(pt)} | pt: {pt.tolist()}')
-            draw.polygon(pt.tolist(), fill=1)
+            draw.polygon(pt.tolist(), fill=fill_val)
         else:
             #print(f'type: {type(pt)} | pt: {pt}')
-            draw.polygon(pt, fill=255)
+            draw.polygon(pt, fill=fill_val)
     del draw
     # show(mask)
     mask = np.asarray(mask).copy()
