@@ -206,6 +206,7 @@ class DataLoader:
             video_orig = skvideo.io.vread(os.path.join(icdar_loc, video_name))
             num_frames, h, w, _ = video_orig.shape
             chosen_frames = np.random.choice(num_frames, num_frames//selection_ratio, replace=False)
+            print(chosen_frames)
             
             for idx in chosen_frames:
                 frame = resize_and_pad((h, w), video_orig[idx])
