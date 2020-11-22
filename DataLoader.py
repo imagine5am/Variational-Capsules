@@ -219,8 +219,8 @@ class DataLoader:
                     mask = np.expand_dims(mask_resized, axis=-1)
                     imshow(frame_mask)
                     print(f'frame_mask: {frame_mask.shape}')
-                    print(f'mask_resized.shape: {mask_resized.shape}')
-                    print(f'mask.shape: {mask.shape}')
+                    # print(f'mask_resized.shape: {mask_resized.shape}')
+                    # print(f'mask.shape: {mask.shape}')
                 else:
                     mask = np.zeros((out_h, out_w, 1), dtype=np.uint8)
                 
