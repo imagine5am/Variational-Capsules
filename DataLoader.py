@@ -216,8 +216,8 @@ class DataLoader:
                     print(f'ann[idx]: {ann[idx]}')
                     print(f'ann[idx].values(): {ann[idx].values()}')
                     print(f'list(ann[idx].values()): {list(ann[idx].values())}')
-                    polygons = ann[idx]
-                    frame_mask = create_mask((h, w), polygons.values())
+                    polygons = list(ann[idx].values())
+                    frame_mask = create_mask((h, w), polygons)
                     mask_resized = resize_and_pad((h, w), frame_mask)
                     mask = np.expand_dims(mask_resized, axis=-1)
                     # imshow(frame_mask)
