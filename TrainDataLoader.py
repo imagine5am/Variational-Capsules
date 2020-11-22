@@ -97,8 +97,7 @@ def create_mask(shape, pts):
     im = np.zeros(shape, dtype=np.uint8)
     im = Image.fromarray(im, 'L')
     draw = ImageDraw.Draw(im)
-    print(pts)
-    print('*' * 20)
+    
     for bbox in pts:
         draw.polygon(bbox, fill=1)
     del draw
@@ -139,7 +138,7 @@ class TrainDataLoader:
     def __init__(self, total_images = 10000):
         self.synth_data_loc = '/mnt/data/Rohit/VideoCapsNet/code/SynthVideo/out'
         #synth_data = self.load_synth_data(7000) 
-        icdar_data = self.load_icdar_data()
+        icdar_data = self.load_icdar_data() # 25 videos 
         #print(len(synth_data))
         print(len(icdar_data))
         print(icdar_data[0][0].shape)
@@ -194,21 +193,25 @@ class TrainDataLoader:
             ann = parse_ann(ann_file)
 
             video_orig = skvideo.io.vread(icdar_loc+video_name)
-            n_frames, h, w, _ = video_orig.shape
-            video = np.zeros((n_frames, out_h, out_w, 3), dtype=np.uint8)
-            mask = np.zeros((n_frames, out_h, out_w, 1), dtype=np.uint8)
+            num_frames, h, w, _ = video_orig.shape
+            print('num_frames:', num_frames)
+            chosen_images = np.random.choice(num_frames, num_frames//10, replace=False)
+            print('chosen_images:', chosen_images)
             
-            for idx in range(n_frames):
-                video[idx] = resize_and_pad((h, w), video_orig[idx])
+            for idx in range(chosen_images):
+                frame = resize_and_pad((h, w), video_orig[idx])
+                print('frame.shape:', frame.shape)
+                print('frame.dtype:', frame.dtype)
                 
-                if idx in ann:
+                if idx in ann and ann[idx]:
                     polygons = ann[idx]
-                    if polygons:
-                        frame_mask = create_mask((h, w), list(polygons.values()))
-                        mask_resized = resize_and_pad((h, w), frame_mask)
-                        mask[idx] = np.expand_dims(mask_resized, axis=-1)
-            
-            data.append((video, mask, 'icdar'))
+                    frame_mask = create_mask((h, w), list(polygons.values()))
+                    mask_resized = resize_and_pad((h, w), frame_mask)
+                    mask = np.expand_dims(mask_resized, axis=-1)
+                else:
+                    mask = np.zeros((out_h, out_w, 1), dtype=np.uint8)
+                
+                data.append((frame, mask, 'icdar'))    
         
         return data
             
