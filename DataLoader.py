@@ -100,10 +100,9 @@ def create_mask(shape, pts):
     mask = Image.fromarray(mask, 'L')
     draw = ImageDraw.Draw(mask)
     for pt in pts:
-        print(pt)
         draw.polygon(pt, fill=1)
     del draw
-    show(mask)
+    # show(mask)
     mask = np.asarray(mask).copy()
     return mask
 
@@ -210,18 +209,16 @@ class DataLoader:
             
             for idx in chosen_frames:
                 frame = resize_and_pad((h, w), video_orig[idx])
-                imshow(frame)
+                # imshow(frame)
                 
                 if idx in ann and ann[idx]:
                     polygons = list(ann[idx].values())
                     frame_mask = create_mask((h, w), polygons)
                     mask_resized = resize_and_pad((h, w), frame_mask)
                     mask = np.expand_dims(mask_resized, axis=-1)
-                    imshow(frame_mask)
-                    # print(f'frame_mask: {frame_mask.shape}')
-                    # print(f'mask_resized.shape: {mask_resized.shape}')
-                    # print(f'mask.shape: {mask.shape}')
+                    # imshow(frame_mask)
                 else:
+                    print(f'ann not in {idx} - {video_name}')
                     mask = np.zeros((out_h, out_w, 1), dtype=np.uint8)
                 
                 data.append((frame, mask, 'icdar'))    
