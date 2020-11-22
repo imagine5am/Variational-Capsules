@@ -100,8 +100,11 @@ def create_mask(shape, pts):
     mask = Image.fromarray(mask, 'L')
     draw = ImageDraw.Draw(mask)
     for pt in pts:
-        print(f'type(pt): {type(pt)}')
-        draw.polygon(pt, fill=1)
+        if isinstance(pt, np.ndarray):
+            print(f'type: np.ndarray | pt: {pt}')
+            # draw.polygon(pt.tolist(), fill=1)
+        else:
+            draw.polygon(pt, fill=1)
     del draw
     # show(mask)
     mask = np.asarray(mask).copy()
