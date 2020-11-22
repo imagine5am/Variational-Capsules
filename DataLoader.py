@@ -139,13 +139,15 @@ class DataLoader:
     def __init__(self, split_type='train', debug=True):
         np.random.seed(7)
         
-        synth_data = self.load_synth_data() 
-        icdar_data = self.load_icdar_data()
+        synth_data = self.load_synth_data()
         print(f'len(synth_data): {len(synth_data)}')
-        print(f'len(icdar_data): {len(icdar_data)}')
+         
+        #icdar_data = self.load_icdar_data()
+        #print(f'len(icdar_data): {len(icdar_data)}')
         
         if debug:
-            self.debug_data(synth_data=synth_data, icdar_data=icdar_data)
+            # self.debug_data(synth_data=synth_data, icdar_data=icdar_data)
+            self.debug_data(synth_data=synth_data)
         
 
     def load_synth_data(self, split_type='train'):
@@ -177,7 +179,11 @@ class DataLoader:
                     frame = cv2.resize(frame, (w, h))
                     
                 mask = create_mask((h, w), v['para_ann'][image_num])
-                data.append((frame, mask, 'synth'))
+                
+                frame_resized = resize_and_pad((h, w), frame)
+                mask_resized = resize_and_pad((h, w), mask)
+                
+                data.append((frame_resized, mask_resized, 'synth'))
         
         return data
     
@@ -216,6 +222,7 @@ class DataLoader:
                 data.append((frame, mask, 'icdar'))    
         
         return data
+    
     
     def debug_data(self, synth_data=None, icdar_data=None):
         os.makedirs(debug_dir, mode = 0o777, exist_ok = False)
