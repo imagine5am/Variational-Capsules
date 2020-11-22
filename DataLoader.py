@@ -8,7 +8,7 @@ import skvideo.io
 import xml.etree.ElementTree as ET
 
 from PIL import Image, ImageDraw
-from scipy.misc import imread, imsave
+from scipy.misc import imread, imsave, imshow
 from tqdm import tqdm
 
 out_h, out_w = 480, 480
@@ -216,6 +216,7 @@ class DataLoader:
                     frame_mask = create_mask((h, w), polygons.values())
                     mask_resized = resize_and_pad((h, w), frame_mask)
                     mask = np.expand_dims(mask_resized, axis=-1)
+                    imshow(frame_mask)
                     print(f'frame_mask: {frame_mask.shape}')
                     print(f'mask_resized.shape: {mask_resized.shape}')
                     print(f'mask.shape: {mask.shape}')
