@@ -260,6 +260,8 @@ class DataLoader:
                     frame_save_loc = os.path.join(base_loc, str(idx)+'_frame.jpg')
                     mask_save_loc = os.path.join(base_loc, str(idx)+'_mask.jpg')
                     imsave(frame_save_loc, frame)
+                    
+                    mask = np.squeeze(mask, axis=-1)
                     print(f'mask.shape: {mask.shape}')
                     print(f'mask.dtype: {mask.dtype}')
                     imsave(mask_save_loc, mask)
