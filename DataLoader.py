@@ -100,6 +100,7 @@ def create_mask(shape, pts):
     mask = Image.fromarray(mask, 'L')
     draw = ImageDraw.Draw(mask)
     for pt in pts:
+        print(f'type(pt): {type(pt)}')
         draw.polygon(pt, fill=1)
     del draw
     # show(mask)
@@ -199,7 +200,7 @@ class DataLoader:
         
         data = []
         
-        for video_name in tqdm(allfiles):
+        for video_name in tqdm(allfiles[:10]):
             ann_file = icdar_loc+video_name[:-4]+'_GT.xml'
             ann = parse_ann(ann_file)
 
@@ -262,8 +263,6 @@ class DataLoader:
                     imsave(frame_save_loc, frame)
                     
                     mask = np.squeeze(mask, axis=-1)
-                    print(f'mask.shape: {mask.shape}')
-                    print(f'mask.dtype: {mask.dtype}')
                     imsave(mask_save_loc, mask)
 
             
