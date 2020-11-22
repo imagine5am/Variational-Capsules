@@ -101,6 +101,7 @@ def create_mask(shape, pts):
     
     for bbox in pts:
         print(type(bbox))
+        print(bbox)
         draw.polygon(bbox, fill=1)
     del draw
     
