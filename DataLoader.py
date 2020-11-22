@@ -102,7 +102,7 @@ def create_mask(shape, pts):
     for pt in pts:
         if isinstance(pt, np.ndarray):
             print(f'type: {type(pt)} | pt: {pt.tolist()}')
-            # draw.polygon(pt.tolist(), fill=1)
+            draw.polygon(pt.tolist(), fill=1)
         else:
             print(f'type: {type(pt)} | pt: {pt}')
             draw.polygon(pt, fill=1)
