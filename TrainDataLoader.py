@@ -97,8 +97,10 @@ def create_mask(shape, pts):
     im = np.zeros(shape, dtype=np.uint8)
     im = Image.fromarray(im, 'L')
     draw = ImageDraw.Draw(im)
+    print(pts)
+    print('*' * 20)
     for bbox in pts:
-        draw.polygon(bbox.tolist(), fill=1)
+        draw.polygon(bbox, fill=1)
     del draw
     
     # cv2.imwrite('temp2.jpg', im)
@@ -187,7 +189,7 @@ class TrainDataLoader:
         
         data = []
         
-        for video_name in allfiles:
+        for video_name in tqdm(allfiles):
             ann_file = icdar_loc+video_name[:-4]+'_GT.xml'
             ann = parse_ann(ann_file)
 
