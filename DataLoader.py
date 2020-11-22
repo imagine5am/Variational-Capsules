@@ -94,7 +94,7 @@ def create_mask(shape, pts):
     mask = Image.fromarray(mask, 'L')
     draw = ImageDraw.Draw(mask)
     
-    debug = False
+    debug = True
     fill_val = 255 if debug else 1
     
     for pt in pts:
@@ -196,7 +196,7 @@ class DataLoader:
         elif split_type=='test':
             icdar_loc = '/mnt/data/Rohit/ICDARVideoDataset/text_in_Video/ch3_test/'
         
-        selection_ratio = 10
+        selection_ratio = 20
         allfiles = list_vids(icdar_loc)
         random.shuffle(allfiles)
         

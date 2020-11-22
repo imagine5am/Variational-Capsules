@@ -9,7 +9,7 @@ from datasets import smallnorb, mnist, svhn
 from evaluate import evaluate
 from train import train
 
-from TrainDataLoader import TrainDataLoader
+from DataLoader import DataLoader
 
 
 warnings.filterwarnings("ignore")
