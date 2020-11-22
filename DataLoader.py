@@ -105,7 +105,7 @@ def create_mask(shape, pts):
     
     # cv2.imwrite('temp2.jpg', im)
     # input()
-    return np.asarray(im)
+    return np.asarray(im).copy()
 
 
 def list_vids(dir):
@@ -140,9 +140,9 @@ class DataLoader:
         np.random.seed(7)
         
         synth_data = self.load_synth_data() 
-        icdar_data = self.load_icdar_data() # 25 videos 
-        print(len(synth_data))
-        print(len(icdar_data))
+        icdar_data = self.load_icdar_data()
+        print(f'len(synth_data): {len(synth_data)}')
+        print(f'len(icdar_data): {len(icdar_data)}')
         
         if debug:
             self.debug_data(synth_data=synth_data, icdar_data=icdar_data)
@@ -183,7 +183,7 @@ class DataLoader:
     
     
     def load_icdar_data(self, split_type='train'):
-        if split_type=='train':
+        if split_type=='train': # 25 videos 
             icdar_loc = '/mnt/data/Rohit/ICDARVideoDataset/text_in_Video/ch3_train/'
         elif split_type=='test':
             icdar_loc = '/mnt/data/Rohit/ICDARVideoDataset/text_in_Video/ch3_test/'
@@ -200,9 +200,7 @@ class DataLoader:
 
             video_orig = skvideo.io.vread(icdar_loc+video_name)
             num_frames, h, w, _ = video_orig.shape
-            print('num_frames:', num_frames)
             chosen_frames = np.random.choice(num_frames, num_frames//selection_ratio, replace=False)
-            print('chosen_frames:', chosen_frames)
             
             for idx in chosen_frames:
                 frame = resize_and_pad((h, w), video_orig[idx])
@@ -244,7 +242,7 @@ class DataLoader:
             base_loc = os.path.join(debug_dir, 'icdar')
             
             for idx in synth_samples:
-                frame, mask, _ = synth_data[idx]
+                frame, mask, _ = icdar_data[idx]
                 
                 if apply_mask:
                     save_loc = os.path.join(base_loc, str(idx)+'_applied_mask.jpg')
