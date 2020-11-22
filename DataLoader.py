@@ -210,6 +210,7 @@ class DataLoader:
             
             for idx in chosen_frames:
                 frame = resize_and_pad((h, w), video_orig[idx])
+                imshow(frame)
                 
                 if idx in ann and ann[idx]:
                     polygons = ann[idx]
