@@ -149,7 +149,8 @@ class DataLoader:
             self.debug_data(synth_data=synth_data, icdar_data=icdar_data)
             # self.debug_data(icdar_data=icdar_data)
         
-        self.data = random.shuffle(synth_data + icdar_data)
+        self.data = synth_data + icdar_data
+        random.shuffle(self.data)
         
 
     def load_synth_data(self, split_type='train'):
@@ -270,5 +271,7 @@ class DataLoader:
             
 if __name__ == "__main__":
     dataloaders = DataLoader()
+    for i, (frame, mask, dataset) enumerate(dataloaders.data):
+        print(frame.dtype)
         
         
