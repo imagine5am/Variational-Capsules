@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -11,22 +12,24 @@ def evaluate(model, args, dataloader):
 
     with torch.no_grad():
 
-        for i, (inputs, labels) in enumerate(dataloader):
-
-            labels = labels.type(torch.LongTensor)
+        for i, (frame, mask, dataset) in enumerate(dataloader):
+            
+            mask = np.transpose(mask, (2, 0, 1))
+            mask = np.expand_dims(mask, axis=0)
+            mask = mask.type(torch.LongTensor)
             # onehot_labels = torch.zeros(labels.size(0),
             #     args.n_classes).scatter_(1, labels.view(-1, 1), 1).cuda()
-            inputs = inputs.type(torch.FloatTensor).cuda()
+            frame = np.transpose(frame, (2, 0, 1)) / 255.
+            frame = np.expand_dims(frame, axis=0)
+            frame = frame.type(torch.FloatTensor).cuda()
 
-            yhat = model(inputs)
+            yhat = model(frame)
 
-            loss = F.cross_entropy(yhat, labels.cuda())
+            loss = F.BCEWithLogitsLoss(yhat, mask.cuda())
 
-            sample_count += inputs.size(0)
-            running_loss += loss.item() * inputs.size(0) # smaller batches count less
-            running_acc += (yhat.argmax(-1) == labels.data.cuda()).sum().item() # n_corrects
+            sample_count += frame.size(0)
+            running_loss += loss.item() * frame.size(0) # smaller batches count less
 
         loss = running_loss / sample_count
-        acc = running_acc / sample_count
 
-    return loss, acc
+    return loss

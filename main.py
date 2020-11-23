@@ -70,7 +70,8 @@ def main(args):
         'Set number of capsules in last layer to number of classes using --arch flag.'
     '''
         
-    dataloaders = TrainDataLoader()
+    dataloader = DataLoader()
+    dataloaders = {'train': dataloader.data}
 
     ''''----------------------- EXPERIMENT CONFIG ---------------------------'''
 
