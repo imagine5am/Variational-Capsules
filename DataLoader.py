@@ -271,7 +271,7 @@ class DataLoader:
             
 if __name__ == "__main__":
     dataloaders = DataLoader()
-    for i, (frame, mask, dataset) enumerate(dataloaders.data):
+    for i, (frame, mask, dataset) in enumerate(dataloaders.data):
         print(frame.dtype)
         
         
