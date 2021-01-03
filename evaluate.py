@@ -16,7 +16,6 @@ def evaluate(model, args):
         dataloader = DataLoader(split_type='test')
         
         for i, (frame, mask, dataset) in enumerate(dataloader.data):
-            mask = np.expand_dims(mask, axis=-1)
             mask = np.transpose(mask, (2, 0, 1))
             mask = np.expand_dims(mask, axis=0)
             mask = mask.type(torch.LongTensor)
