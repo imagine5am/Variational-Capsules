@@ -187,8 +187,9 @@ class DataLoader:
                 
                 frame_resized = resize_and_pad((h, w), frame)
                 mask_resized = resize_and_pad((h, w), mask)
+                mask = np.expand_dims(mask_resized, axis=-1)
                 
-                data.append((frame_resized, mask_resized, 'synth'))
+                data.append((frame_resized, mask, 'synth'))
         
         return data
     
@@ -259,6 +260,7 @@ class DataLoader:
                     frame_save_loc = os.path.join(base_loc, str(idx)+'_frame.jpg')
                     mask_save_loc = os.path.join(base_loc, str(idx)+'_mask.jpg')
                     imsave(frame_save_loc, frame)
+                    mask = np.squeeze(mask, axis=-1)
                     imsave(mask_save_loc, mask)
                     
         if icdar_data:
@@ -277,7 +279,6 @@ class DataLoader:
                     frame_save_loc = os.path.join(base_loc, str(idx)+'_frame.jpg')
                     mask_save_loc = os.path.join(base_loc, str(idx)+'_mask.jpg')
                     imsave(frame_save_loc, frame)
-                    
                     mask = np.squeeze(mask, axis=-1)
                     imsave(mask_save_loc, mask)
 
