@@ -38,6 +38,7 @@ def train(model, args):
         for i, (frame, mask, dataset) in enumerate(tqdm(dataloader.data)):
             args.step = (epoch * num_train_samples) + i + 1
 
+            mask = np.expand_dims(mask, axis=-1)
             print(f'mask.shape: {mask.shape}')
             mask = np.transpose(mask, (2, 0, 1))
             mask = np.expand_dims(mask, axis=0)
