@@ -16,6 +16,8 @@ out_h, out_w = 480, 480
 debug_dir = './debug'
 DEBUG = False
 
+if not os.path.exists(debug_dir):
+    os.makedirs(debug_dir)
 
 def order_points(pts):
     # bottom-right, and the fourth is the bottom-left
@@ -244,6 +246,8 @@ class DataLoader:
         if synth_data:
             synth_samples = np.random.choice(len(synth_data), sample_size, replace=False)
             base_loc = os.path.join(debug_dir, 'synth')
+            if not os.path.exists(base_loc):
+                os.makedirs(base_loc)
             
             for idx in synth_samples:
                 frame, mask, _ = synth_data[idx]
@@ -260,6 +264,8 @@ class DataLoader:
         if icdar_data:
             synth_samples = np.random.choice(len(icdar_data), sample_size, replace=False)
             base_loc = os.path.join(debug_dir, 'icdar')
+            if not os.path.exists(base_loc):
+                os.makedirs(base_loc)
             
             for idx in synth_samples:
                 frame, mask, _ = icdar_data[idx]
@@ -278,6 +284,7 @@ class DataLoader:
             
 if __name__ == "__main__":
     DEBUG = True
+    
     dataloaders = DataLoader()
     for i, (frame, mask, dataset) in enumerate(dataloaders.data):
         print(frame.dtype)
