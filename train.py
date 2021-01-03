@@ -36,7 +36,7 @@ def train(model, args):
         logging.info('\nEpoch {}/{}:\n'.format(epoch+1, args.n_epochs))
 
         for i, (frame, mask, dataset) in enumerate(tqdm(dataloader.data)):
-            args.step = (epoch * len(num_train_samples)) + i + 1
+            args.step = (epoch * num_train_samples) + i + 1
 
             mask = np.transpose(mask, (2, 0, 1))
             mask = np.expand_dims(mask, axis=0)
