@@ -52,9 +52,9 @@ def train(model, args):
 
             optimiser.zero_grad()
             print(f'frame.shape: {frame.shape}')
+            print(f'mask.shape: {mask.shape}')
             yhat = model(frame)
             print(f'yhat.shape: {yhat.shape}')
-            print(f'mask.shape: {mask.shape}')
             loss = F.BCEWithLogitsLoss(yhat, mask.cuda())
 
             loss.backward()
