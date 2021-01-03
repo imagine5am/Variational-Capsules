@@ -165,7 +165,7 @@ class DataLoader:
         data = []
         
         print('Loading Synthetic training data...')
-        for k, v in tqdm(train_files):
+        for k, v in tqdm(train_files[:100]):
             num_frames = v['word_ann'].shape[0]
             image_nums = np.random.choice(num_frames, 2, replace=False)
             video_dir = os.path.join(frames_dir, k)
@@ -205,7 +205,7 @@ class DataLoader:
         
         data = []
         
-        for video_name in tqdm(allfiles):
+        for video_name in tqdm(allfiles[:3]):
             ann_file = icdar_loc+video_name[:-4]+'_GT.xml'
             ann = parse_ann(ann_file)
 
