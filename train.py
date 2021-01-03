@@ -51,6 +51,7 @@ def train(model, args):
             frame = torch.FloatTensor(frame).cuda()
 
             optimiser.zero_grad()
+            print(f'frame.shape: {frame.shape}')
             yhat = model(frame)
             print(f'yhat.shape: {yhat.shape}')
             print(f'mask.shape: {mask.shape}')
