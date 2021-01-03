@@ -38,7 +38,6 @@ def train(model, args):
         for i, (frame, mask, dataset) in enumerate(tqdm(dataloader.data)):
             args.step = (epoch * num_train_samples) + i + 1
 
-            print(f'mask.shape: {mask.shape}')
             mask = np.transpose(mask, (2, 0, 1))
             mask = np.expand_dims(mask, axis=0)
             # mask = mask.type(torch.LongTensor)
@@ -46,7 +45,6 @@ def train(model, args):
             # onehot_labels = torch.zeros(labels.size(0),
             #     args.n_classes).scatter_(1, labels.view(-1, 1), 1).cuda()
             
-            print(f'frame.shape: {frame.shape}')
             frame = np.transpose(frame, (2, 0, 1)) / 255.
             frame = np.expand_dims(frame, axis=0)
             # frame = frame.type(torch.FloatTensor).cuda()
@@ -54,6 +52,8 @@ def train(model, args):
 
             optimiser.zero_grad()
             yhat = model(frame)
+            print(f'yhat.shape: {yhat.shape}')
+            print(f'mask.shape: {mask.shape}')
             loss = F.BCEWithLogitsLoss(yhat, mask.cuda())
 
             loss.backward()
