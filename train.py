@@ -4,12 +4,14 @@ from tqdm import tqdm
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
+
+from DataLoader import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
 from evaluate import evaluate
 
 
-def train(model, dataloaders, args):
+def train(model, args):
 
     # logging.info('\ntrain: {} - valid: {} - test: {}'.format(
     #     len(dataloaders['train'].dataset), len(dataloaders['valid'].dataset),
@@ -25,14 +27,16 @@ def train(model, dataloaders, args):
     patience_counter = 0
 
     for epoch in range(args.n_epochs):
+        dataloader = DataLoader()
+        num_train_samples = len(dataloader.data)
         model.train()
         sample_count = 0
         running_loss = 0
 
         logging.info('\nEpoch {}/{}:\n'.format(epoch+1, args.n_epochs))
 
-        for i, (frame, mask, dataset) in enumerate(tqdm(dataloaders['train'])):
-            args.step = (epoch * len(dataloaders['train'])) + i + 1
+        for i, (frame, mask, dataset) in enumerate(tqdm(dataloader.data)):
+            args.step = (epoch * len(num_train_samples)) + i + 1
 
             mask = np.transpose(mask, (2, 0, 1))
             mask = np.expand_dims(mask, axis=0)
@@ -100,7 +104,7 @@ def train(model, dataloaders, args):
 
     model.load_state_dict(torch.load(args.checkpoint_dir)) # load best model
 
-    test_loss, test_acc = evaluate(model, args, dataloaders['test'])
+    test_loss, test_acc = evaluate(model, args)
 
     logging.info('\nBest Valid: Epoch {} - Loss {:.4f} - Acc. {:.4f}'.format(
         best_epoch, best_valid_loss, best_valid_acc))

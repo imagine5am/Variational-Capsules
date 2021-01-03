@@ -14,6 +14,7 @@ from tqdm import tqdm
 
 out_h, out_w = 480, 480
 debug_dir = './debug'
+DEBUG = False
 
 
 def order_points(pts):
@@ -94,8 +95,7 @@ def create_mask(shape, pts):
     mask = Image.fromarray(mask, 'L')
     draw = ImageDraw.Draw(mask)
     
-    debug = True
-    fill_val = 255 if debug else 1
+    fill_val = 255 if DEBUG else 1
     
     for pt in pts:
         if isinstance(pt, np.ndarray):
@@ -136,16 +136,16 @@ def parse_ann(file):
 
 
 class DataLoader:
-    def __init__(self, split_type='train', debug=True):
+    def __init__(self, split_type='train'):
         np.random.seed(7)
         
         synth_data = self.load_synth_data()
         print(f'len(synth_data): {len(synth_data)}')
          
-        icdar_data = self.load_icdar_data()
+        icdar_data = self.load_icdar_data(split_type)
         print(f'len(icdar_data): {len(icdar_data)}')
         
-        if debug:
+        if DEBUG:
             self.debug_data(synth_data=synth_data, icdar_data=icdar_data)
             # self.debug_data(icdar_data=icdar_data)
         
@@ -229,6 +229,13 @@ class DataLoader:
         
         return data
     
+    def load_CAT_data(self, split_type='train'):
+        if split_type == 'train':
+            cat_ann_loc = "/mnt/data/Rohit/ACMData/1a_CATVideosTrain/1ShubhamTrainclean"
+        elif split_type == 'val':
+            cat_ann_loc = "/mnt/data/Rohit/ACMData/1a_CATVideosTrain/2ShubhamValclean"
+        elif split_type == 'test':
+            cat_ann_loc = "/mnt/data/Rohit/ACMData/1a_CATVideosTrain/3ShubhamTestclean"
     
     def debug_data(self, synth_data=None, icdar_data=None):
         sample_size = 100
@@ -270,8 +277,8 @@ class DataLoader:
 
             
 if __name__ == "__main__":
+    DEBUG = True
     dataloaders = DataLoader()
     for i, (frame, mask, dataset) in enumerate(dataloaders.data):
         print(frame.dtype)
-        
         

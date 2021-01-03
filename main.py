@@ -69,9 +69,6 @@ def main(args):
     assert args.arch[-1] == args.n_classes, \
         'Set number of capsules in last layer to number of classes using --arch flag.'
     '''
-        
-    dataloader = DataLoader()
-    dataloaders = {'train': dataloader.data}
 
     ''''----------------------- EXPERIMENT CONFIG ---------------------------'''
 
@@ -135,11 +132,11 @@ def main(args):
 
     if not args.inference:
         args.writer = SummaryWriter(args.summaries_dir) # initialise summary writer
-        score = train(model, dataloaders, args)
+        score = train(model, args)
         return score # loss of test set
     else:
         model.load_state_dict(torch.load(args.load_checkpoint_dir)) # load best saved model
-        test_loss, test_acc = evaluate(model, args, dataloaders['test'])
+        test_loss, test_acc = evaluate(model, args)
         print('Test: Loss {:.4f} - Acc. {:.4f}'.format(test_loss, test_acc))
 
 if __name__ == '__main__':
