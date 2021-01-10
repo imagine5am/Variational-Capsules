@@ -5,7 +5,8 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 
-from DataLoader import DataLoader
+from CustomDataset import CustomDataset
+from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
 from evaluate import evaluate
@@ -25,44 +26,43 @@ def train(model, args):
     best_valid_loss = np.inf
     best_valid_acc = 0
     patience_counter = 0
+    
+    dataset = CustomDataset()
+    train_dataloader = DataLoader(dataset, shuffle=True, pin_memory=True, num_workers=8,batch_size=args.batch_size)
+    num_train_samples = len(train_dataloader.dataset)
 
     for epoch in range(args.n_epochs):
-        dataloader = DataLoader()
-        num_train_samples = len(dataloader.data)
         model.train()
         sample_count = 0
         running_loss = 0
 
         logging.info('\nEpoch {}/{}:\n'.format(epoch+1, args.n_epochs))
 
-        for i, (frame, mask, dataset) in enumerate(tqdm(dataloader.data)):
+        for i, (inputs, labels) in enumerate(tqdm(train_dataloader)):
             args.step = (epoch * num_train_samples) + i + 1
 
-            mask = np.transpose(mask, (2, 0, 1))
-            mask = np.expand_dims(mask, axis=0)
-            # mask = mask.type(torch.LongTensor)
-            mask = torch.LongTensor(mask)
-            # onehot_labels = torch.zeros(labels.size(0),
-            #     args.n_classes).scatter_(1, labels.view(-1, 1), 1).cuda()
+            labels = np.transpose(labels, (3, 1, 2))
+            # mask = np.expand_dims(mask, axis=0)
+            labels = torch.LongTensor(labels)
             
-            frame = np.transpose(frame, (2, 0, 1)) / 255.
-            frame = np.expand_dims(frame, axis=0)
+            inputs = np.transpose(inputs, (3, 1, 2)) / 255.
+            # inputs = np.expand_dims(inputs, axis=0)
             # frame = frame.type(torch.FloatTensor).cuda()
-            frame = torch.FloatTensor(frame).cuda()
+            inputs = torch.FloatTensor(inputs).cuda()
 
             optimiser.zero_grad()
-            print(f'frame.shape: {frame.shape}')
-            print(f'mask.shape: {mask.shape}')
-            yhat = model(frame)
+            print(f'frame.shape: {inputs.shape}')
+            print(f'mask.shape: {labels.shape}')
+            yhat = model(inputs)
             print(f'yhat.shape: {yhat.shape}')
-            loss = F.BCEWithLogitsLoss(yhat, mask.cuda())
+            loss = F.BCEWithLogitsLoss(yhat, labels.cuda())
 
             loss.backward()
             # torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
             optimiser.step()
 
-            sample_count += frame.size(0)
-            running_loss += loss.item() * frame.size(0) # smaller batches count less
+            sample_count += inputs.size(0)
+            running_loss += loss.item() * inputs.size(0) # smaller batches count less
             # running_acc += (yhat.argmax(-1) == mask.cuda()).sum().item() # n_corrects
 
         epoch_train_loss = running_loss / sample_count

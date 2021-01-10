@@ -3,7 +3,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from DataLoader import DataLoader
+from CustomDataset import CustomDataset
+from torch.utils.data import DataLoader
+from tqdm import tqdm
 
 
 def evaluate(model, args):
@@ -13,24 +15,26 @@ def evaluate(model, args):
     running_acc = 0
 
     with torch.no_grad():
-        dataloader = DataLoader(split_type='test')
+        dataset = CustomDataset(split_type='test')
+        train_dataloader = DataLoader(dataset, pin_memory=True, num_workers=8,batch_size=args.    batch_size)
+        num_train_samples = len(train_dataloader.dataset)
         
-        for i, (frame, mask, dataset) in enumerate(dataloader.data):
-            mask = np.transpose(mask, (2, 0, 1))
-            mask = np.expand_dims(mask, axis=0)
-            mask = mask.type(torch.LongTensor)
+        for i, (inputs, labels) in enumerate(tqdm(train_dataloader)):
+            labels = np.transpose(labels, (3, 1, 2))
+            #mask = np.expand_dims(mask, axis=0)
+            labels = labels.type(torch.LongTensor)
             # onehot_labels = torch.zeros(labels.size(0),
             #     args.n_classes).scatter_(1, labels.view(-1, 1), 1).cuda()
-            frame = np.transpose(frame, (2, 0, 1)) / 255.
-            frame = np.expand_dims(frame, axis=0)
-            frame = frame.type(torch.FloatTensor).cuda()
+            inputs = np.transpose(inputs, (3, 1, 2)) / 255.
+            # frame = np.expand_dims(frame, axis=0)
+            inputs = inputs.type(torch.FloatTensor).cuda()
 
-            yhat = model(frame)
+            yhat = model(inputs)
 
-            loss = F.BCEWithLogitsLoss(yhat, mask.cuda())
+            loss = F.BCEWithLogitsLoss(yhat, labels.cuda())
 
-            sample_count += frame.size(0)
-            running_loss += loss.item() * frame.size(0) # smaller batches count less
+            sample_count += inputs.size(0)
+            running_loss += loss.item() * inputs.size(0) # smaller batches count less
 
         loss = running_loss / sample_count
 

@@ -10,6 +10,7 @@ import xml.etree.ElementTree as ET
 from PIL import Image, ImageDraw
 from PIL.ImageShow import show
 from scipy.misc import imread, imsave, imshow
+from torch.utils.data import Dataset
 from tqdm import tqdm
 
 out_h, out_w = 480, 480
@@ -137,7 +138,7 @@ def parse_ann(file):
     return ann
 
 
-class DataLoader:
+class CustomDataset (Dataset):
     def __init__(self, split_type='train'):
         np.random.seed(7)
         
@@ -153,7 +154,16 @@ class DataLoader:
         
         self.data = synth_data + icdar_data
         random.shuffle(self.data)
-        
+       
+     
+    def __len__(self):
+        return len(self.data)
+
+
+    def __getitem__(self, idx):
+        image, mask, dataset = self.data[idx] 
+        return image, mask
+    
 
     def load_synth_data(self, split_type='train'):
         synth_data_loc = '/mnt/data/Rohit/VideoCapsNet/code/SynthVideo/out'
