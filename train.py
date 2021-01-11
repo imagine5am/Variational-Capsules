@@ -31,7 +31,11 @@ def train(model, args):
     dataset = CustomDataset()
     train_dataloader = DataLoader(dataset, shuffle=True, pin_memory=True, num_workers=8,batch_size=args.batch_size)
     num_train_samples = len(train_dataloader.dataset)
-
+    
+    # loss_fn = F.BCEWithLogitsLoss
+    loss_fn = nn.BCELoss()
+    # loss_fn = F.cross_entropy
+    
     for epoch in range(args.n_epochs):
         model.train()
         sample_count = 0
@@ -60,10 +64,7 @@ def train(model, args):
             
             print(f'yhat.shape: {yhat.shape} | yhat.dtype: {yhat.dtype}')
             
-            # loss = F.BCEWithLogitsLoss(yhat, labels.cuda())
-            # loss = nn.BCELoss()(yhat, labels.cuda())
-            loss = F.cross_entropy(yhat, labels.cuda())
-
+            loss = loss_fn(yhat, labels.cuda())
             loss.backward()
             # torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
             optimiser.step()
