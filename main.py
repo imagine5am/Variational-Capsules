@@ -9,8 +9,6 @@ from datasets import smallnorb, mnist, svhn
 from evaluate import evaluate
 from train import train
 
-from DataLoader import DataLoader
-
 
 warnings.filterwarnings("ignore")
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -27,49 +25,7 @@ torch.cuda.manual_seed(seed)
 torch.cuda.manual_seed_all(seed)
 
 def main(args):
-
-    ''' --------------------------- LOAD DATA -------------------------------'''
-    '''
-    if args.dataset == 'smallnorb':
-        dataset = 'smallNORB_48'
-        working_dir = os.path.join(os.path.split(os.getcwd())[0], 'data', dataset)
-        dataset_paths = {'train': os.path.join(working_dir,'train'),
-                        'test':  os.path.join(working_dir,'test')}
-
-        dataloaders = smallnorb(args, dataset_paths)
-
-        args.class_names = ('car', 'animal', 'truck', 'airplane', 'human') # 0,1,2,3,4 labels
-        args.n_channels, args.n_classes = 2, 5
-
-    elif args.dataset == 'mnist':
-        dataset = 'MNIST'
-        working_dir = os.path.join(os.path.split(os.getcwd())[0], 'data', dataset)
-        dataset_paths = {'train': os.path.join(working_dir,'train'),
-                         'test':  os.path.join(working_dir,'test')}
-
-        dataloaders = mnist(args, dataset_paths)
-
-        args.class_names = ('zero', 'one', 'two', 'three', 'four',
-            'five', 'six', 'seven', 'eight', 'nine') # 0,1,2,3,4,5,6,7,8,9 labels
-        args.n_channels, args.n_classes = 1, 10
-
-    elif args.dataset == 'svhn':
-        dataset = 'SVHN'
-        working_dir = os.path.join(os.path.split(os.getcwd())[0], 'data', dataset)
-        dataset_paths = {'train': os.path.join(working_dir,'train'),
-                         #'extra': os.path.join(working_dir,'extra'),
-                         'test':  os.path.join(working_dir,'test')}
-
-        dataloaders = svhn(args, dataset_paths)
-
-        args.class_names = ('zero', 'one', 'two', 'three',
-            'four', 'five', 'six', 'seven', 'eight', 'nine') # 0,1,2,3,4,5,6,7,8,9 labels
-        args.n_channels, args.n_classes = 3, 10
-
-    assert args.arch[-1] == args.n_classes, \
-        'Set number of capsules in last layer to number of classes using --arch flag.'
-    '''
-
+    
     ''''----------------------- EXPERIMENT CONFIG ---------------------------'''
 
     # check number of models already saved in 'experiments' dir, add 1 to get new model number
