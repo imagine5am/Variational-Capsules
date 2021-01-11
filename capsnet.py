@@ -130,7 +130,7 @@ class CapsuleNet(nn.Module):
 
 
     def forward(self, x):
-        print_flag = True
+        print_flag = False
         if print_flag: print('-' * 70)
 
         # Out ← [?, A, F, F]
