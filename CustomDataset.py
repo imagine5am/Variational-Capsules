@@ -162,7 +162,7 @@ class CustomDataset (Dataset):
 
     def __getitem__(self, idx):
         image, mask, dataset = self.data[idx] 
-        return image, mask
+        return image / 255., mask
     
 
     def load_synth_data(self, split_type='train'):
@@ -242,6 +242,8 @@ class CustomDataset (Dataset):
         
         return data
     
+    
+    '''
     def load_CAT_data(self, split_type='train'):
         if split_type == 'train':
             cat_ann_loc = "/mnt/data/Rohit/ACMData/1a_CATVideosTrain/1ShubhamTrainclean"
@@ -249,6 +251,8 @@ class CustomDataset (Dataset):
             cat_ann_loc = "/mnt/data/Rohit/ACMData/1a_CATVideosTrain/2ShubhamValclean"
         elif split_type == 'test':
             cat_ann_loc = "/mnt/data/Rohit/ACMData/1a_CATVideosTrain/3ShubhamTestclean"
+    '''
+    
     
     def debug_data(self, synth_data=None, icdar_data=None):
         sample_size = 100
