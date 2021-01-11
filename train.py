@@ -41,6 +41,9 @@ def train(model, args):
         for i, (inputs, labels) in enumerate(tqdm(train_dataloader)):
             args.step = (epoch * num_train_samples) + i + 1
 
+            print(f'inputs.shape: {inputs.shape}')
+            print(f'labels.shape: {labels.shape}')
+            
             labels = np.transpose(labels, (3, 1, 2))
             # mask = np.expand_dims(mask, axis=0)
             labels = torch.LongTensor(labels)
@@ -51,8 +54,7 @@ def train(model, args):
             inputs = torch.FloatTensor(inputs).cuda()
 
             optimiser.zero_grad()
-            print(f'frame.shape: {inputs.shape}')
-            print(f'mask.shape: {labels.shape}')
+            
             yhat = model(inputs)
             print(f'yhat.shape: {yhat.shape}')
             loss = F.BCEWithLogitsLoss(yhat, labels.cuda())
