@@ -47,6 +47,7 @@ def train(model, args):
             inputs = inputs.permute(0, 3, 1, 2)
             inputs = inputs.type(torch.FloatTensor).cuda()
             labels = labels.permute(0, 3, 1, 2)
+            labels = labels.type(torch.LongTensor)
 
             print(f'inputs.shape: {inputs.shape} | inputs.dtype: {inputs.dtype}')
             print(f'labels.shape: {labels.shape} | labels.dtype: {labels.dtype}')
@@ -65,7 +66,8 @@ def train(model, args):
             yhat = model(inputs)
             print(f'yhat.shape: {yhat.shape}')
             # loss = F.BCEWithLogitsLoss(yhat, labels.cuda())
-            loss = F.cross_entropy(yhat, labels.cuda())
+            loss = nn.BCELoss()(yhat, labels.cuda())
+            # loss = F.cross_entropy(yhat, labels.cuda())
 
             loss.backward()
             # torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
