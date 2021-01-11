@@ -64,7 +64,8 @@ def train(model, args):
             
             yhat = model(inputs)
             print(f'yhat.shape: {yhat.shape}')
-            loss = F.BCEWithLogitsLoss(yhat, labels.cuda())
+            # loss = F.BCEWithLogitsLoss(yhat, labels.cuda())
+            loss = F.cross_entropy(yhat, labels.cuda())
 
             loss.backward()
             # torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
