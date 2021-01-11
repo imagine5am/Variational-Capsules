@@ -44,7 +44,8 @@ def train(model, args):
             print(f'inputs.shape: {inputs.shape} | inputs.dtype: {inputs.dtype}')
             print(f'labels.shape: {labels.shape} | labels.dtype: {labels.dtype}')
             
-            inputs = inputs.permute(0, 3, 1, 2).cuda()
+            inputs = inputs.permute(0, 3, 1, 2)
+            inputs = inputs.type(torch.FloatTensor).cuda()
             labels = labels.permute(0, 3, 1, 2)
 
             print(f'inputs.shape: {inputs.shape} | inputs.dtype: {inputs.dtype}')
