@@ -11,6 +11,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from evaluate import evaluate
 
+DEBUG = False
 
 def train(model, args):
 
@@ -41,25 +42,18 @@ def train(model, args):
         for i, (inputs, labels) in enumerate(tqdm(train_dataloader)):
             args.step = (epoch * num_train_samples) + i + 1
             
-            print(f'inputs.shape: {inputs.shape} | inputs.dtype: {inputs.dtype}')
-            print(f'labels.shape: {labels.shape} | labels.dtype: {labels.dtype}')
+            if DEBUG:
+                print(f'inputs.shape: {inputs.shape} | inputs.dtype: {inputs.dtype}')
+                print(f'labels.shape: {labels.shape} | labels.dtype: {labels.dtype}')
             
             inputs = inputs.permute(0, 3, 1, 2)
             inputs = inputs.type(torch.FloatTensor).cuda()
             labels = labels.permute(0, 3, 1, 2)
             labels = labels.type(torch.FloatTensor)
 
-            print(f'inputs.shape: {inputs.shape} | inputs.dtype: {inputs.dtype}')
-            print(f'labels.shape: {labels.shape} | labels.dtype: {labels.dtype}')
-                      
-            #labels = np.transpose(labels, (3, 1, 2))
-            # mask = np.expand_dims(mask, axis=0)
-            #labels = torch.LongTensor(labels)
-            
-            #inputs = np.transpose(inputs, (3, 1, 2)) / 255.
-            # inputs = np.expand_dims(inputs, axis=0)
-            # frame = frame.type(torch.FloatTensor).cuda()
-            # inputs = torch.FloatTensor(inputs).cuda()
+            if DEBUG:
+                print(f'inputs.shape: {inputs.shape} | inputs.dtype: {inputs.dtype}')
+                print(f'labels.shape: {labels.shape} | labels.dtype: {labels.dtype}')
 
             optimiser.zero_grad()
             yhat = model(inputs)
@@ -67,8 +61,8 @@ def train(model, args):
             print(f'yhat.shape: {yhat.shape} | yhat.dtype: {yhat.dtype}')
             
             # loss = F.BCEWithLogitsLoss(yhat, labels.cuda())
-            loss = nn.BCELoss()(yhat, labels.cuda())
-            # loss = F.cross_entropy(yhat, labels.cuda())
+            # loss = nn.BCELoss()(yhat, labels.cuda())
+            loss = F.cross_entropy(yhat, labels.cuda())
 
             loss.backward()
             # torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
