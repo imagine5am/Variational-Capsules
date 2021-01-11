@@ -144,7 +144,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', default='smallnorb')
     parser.add_argument('--n_epochs', type=int, default=300)
-    parser.add_argument('--batch_size', type=int, default=128)
+    parser.add_argument('--batch_size', type=int, default=1)
     parser.add_argument('--learning_rate', type=float, default=1e-3)
     parser.add_argument('--weight_decay', type=float, default=0)
     parser.add_argument('--routing_iter', type=int, default=3)
