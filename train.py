@@ -44,14 +44,20 @@ def train(model, args):
             print(f'inputs.shape: {inputs.shape}')
             print(f'labels.shape: {labels.shape}')
             
-            labels = np.transpose(labels, (3, 1, 2))
+            inputs = inputs.permute(0, 3, 1, 2).cuda()
+            labels = labels.permute(0, 3, 1, 2)
+
+            print(f'inputs.shape: {inputs.shape}')
+            print(f'labels.shape: {labels.shape}')
+                      
+            #labels = np.transpose(labels, (3, 1, 2))
             # mask = np.expand_dims(mask, axis=0)
-            labels = torch.LongTensor(labels)
+            #labels = torch.LongTensor(labels)
             
-            inputs = np.transpose(inputs, (3, 1, 2)) / 255.
+            #inputs = np.transpose(inputs, (3, 1, 2)) / 255.
             # inputs = np.expand_dims(inputs, axis=0)
             # frame = frame.type(torch.FloatTensor).cuda()
-            inputs = torch.FloatTensor(inputs).cuda()
+            # inputs = torch.FloatTensor(inputs).cuda()
 
             optimiser.zero_grad()
             
