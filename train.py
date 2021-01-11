@@ -62,12 +62,13 @@ def train(model, args):
             # inputs = torch.FloatTensor(inputs).cuda()
 
             optimiser.zero_grad()
-            
             yhat = model(inputs)
+            
             print(f'yhat.shape: {yhat.shape} | yhat.dtype: {yhat.dtype}')
+            
             # loss = F.BCEWithLogitsLoss(yhat, labels.cuda())
-            # loss = nn.BCELoss()(yhat, labels.cuda())
-            loss = F.cross_entropy(yhat, labels.cuda())
+            loss = nn.BCELoss()(yhat, labels.cuda())
+            # loss = F.cross_entropy(yhat, labels.cuda())
 
             loss.backward()
             # torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
