@@ -40,15 +40,15 @@ def train(model, args):
 
         for i, (inputs, labels) in enumerate(tqdm(train_dataloader)):
             args.step = (epoch * num_train_samples) + i + 1
-
-            print(f'inputs.shape: {inputs.shape}')
-            print(f'labels.shape: {labels.shape}')
+            
+            print(f'inputs.shape: {inputs.shape} | inputs.dtype: {inputs.dtype}')
+            print(f'labels.shape: {labels.shape} | labels.dtype: {labels.dtype}')
             
             inputs = inputs.permute(0, 3, 1, 2).cuda()
             labels = labels.permute(0, 3, 1, 2)
 
-            print(f'inputs.shape: {inputs.shape}')
-            print(f'labels.shape: {labels.shape}')
+            print(f'inputs.shape: {inputs.shape} | inputs.dtype: {inputs.dtype}')
+            print(f'labels.shape: {labels.shape} | labels.dtype: {labels.dtype}')
                       
             #labels = np.transpose(labels, (3, 1, 2))
             # mask = np.expand_dims(mask, axis=0)
