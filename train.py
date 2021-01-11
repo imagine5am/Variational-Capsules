@@ -62,7 +62,8 @@ def train(model, args):
             optimiser.zero_grad()
             yhat = model(inputs)
             
-            print(f'yhat.shape: {yhat.shape} | yhat.dtype: {yhat.dtype}')
+            if DEBUG:
+                print(f'yhat.shape: {yhat.shape} | yhat.dtype: {yhat.dtype}')
             
             loss = loss_fn(yhat, labels.cuda())
             loss.backward()
