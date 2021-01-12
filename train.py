@@ -47,7 +47,7 @@ def train(model, args):
         logging.info('\nEpoch {}/{}:\n'.format(epoch+1, args.n_epochs))
 
         for i, (inputs, labels) in enumerate(tqdm(train_dataloader)):
-            if inputs.shape(0) == 1:
+            if inputs.shape[0] == 1:
                 continue
             
             args.step = (epoch * num_train_samples) + i + 1
@@ -83,8 +83,7 @@ def train(model, args):
         train_loss = running_loss / sample_count
         # epoch_train_acc = running_acc / sample_count
 
-        if args.step % 5 == 0:
-            print(f'Inside if statement. args.step: {args.step}')
+        if (epoch+1) % 5 == 0:
             test_loss = evaluate(model, args, test_dataloader)
             logging.info('\nTrain loss: {:.4f} | Test Loss: {:.4f}'.format(train_loss, 
                                                                            test_loss))

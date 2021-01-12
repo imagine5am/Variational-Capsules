@@ -7,7 +7,7 @@ from CustomDataset import CustomDataset
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-DEBUG = True
+DEBUG = False
 
 def evaluate(model, args, dataloader):
     model.eval()
@@ -21,7 +21,7 @@ def evaluate(model, args, dataloader):
         # num_train_samples = len(dataloader.dataset)
         
         for i, (inputs, labels) in enumerate(tqdm(dataloader)):
-            if inputs.shape(0) == 1:
+            if inputs.shape[0] == 1:
                 continue
             
             if DEBUG:
@@ -49,3 +49,4 @@ def evaluate(model, args, dataloader):
         # acc = running_acc / sample_count
 
     # return loss, acc
+    return loss
