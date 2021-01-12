@@ -7,6 +7,7 @@ from CustomDataset import CustomDataset
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
+DEBUG = True
 
 def evaluate(model, args, dataloader):
     model.eval()
@@ -21,10 +22,18 @@ def evaluate(model, args, dataloader):
         
         for i, (inputs, labels) in enumerate(tqdm(dataloader)):
             
+            if DEBUG:
+                print(f'inputs.shape: {inputs.shape} | inputs.dtype: {inputs.dtype}')
+                print(f'labels.shape: {labels.shape} | labels.dtype: {labels.dtype}')
+            
             inputs = inputs.permute(0, 3, 1, 2)
             inputs = inputs.type(torch.FloatTensor).cuda()
             labels = labels.permute(0, 3, 1, 2)
             labels = labels.type(torch.FloatTensor)
+            
+            if DEBUG:
+                print(f'inputs.shape: {inputs.shape} | inputs.dtype: {inputs.dtype}')
+                print(f'labels.shape: {labels.shape} | labels.dtype: {labels.dtype}')
 
             yhat = model(inputs)
 

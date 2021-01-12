@@ -182,6 +182,7 @@ class CustomDataset (Dataset):
         data = []
         
         print('Loading Synthetic training data...')
+        
         for k, v in tqdm(train_files[:100]):
             num_frames = v['word_ann'].shape[0]
             image_nums = np.random.choice(num_frames, 2, replace=False)
@@ -213,8 +214,13 @@ class CustomDataset (Dataset):
     
     def load_icdar_data(self, split_type='train'):
         if split_type=='train': # 25 videos 
+            
+            print('Loading ICDAR training data...')
             icdar_loc = '/mnt/data/Rohit/ICDARVideoDataset/text_in_Video/ch3_train/'
+        
         elif split_type=='test':
+            
+            print('Loading ICDAR test data...')
             icdar_loc = '/mnt/data/Rohit/ICDARVideoDataset/text_in_Video/ch3_test/'
         
         selection_ratio = 20
