@@ -28,9 +28,12 @@ def train(model, args):
     best_valid_acc = 0
     patience_counter = 0
     
-    dataset = CustomDataset()
-    train_dataloader = DataLoader(dataset, shuffle=True, pin_memory=True, num_workers=8,batch_size=args.batch_size)
+    train_dataset = CustomDataset()
+    train_dataloader = DataLoader(train_dataset, shuffle=True, pin_memory=True, num_workers=8,batch_size=args.batch_size)
     num_train_samples = len(train_dataloader.dataset)
+    
+    test_dataset = CustomDataset(split_type='test')
+    test_dataloader = DataLoader(test_dataset, pin_memory=True, num_workers=8,batch_size=args.batch_size)
     
     # loss_fn = F.BCEWithLogitsLoss
     loss_fn = nn.BCELoss()
@@ -74,17 +77,21 @@ def train(model, args):
             running_loss += loss.item() * inputs.size(0) # smaller batches count less
             # running_acc += (yhat.argmax(-1) == mask.cuda()).sum().item() # n_corrects
 
-        epoch_train_loss = running_loss / sample_count
+        train_loss = running_loss / sample_count
         # epoch_train_acc = running_acc / sample_count
 
-        epoch_valid_loss, epoch_valid_acc = evaluate(model, args, dataloaders['valid'])
+        if args.step % 5 == 0:
+            test_loss, test_acc = evaluate(model, args, test_dataloader)
+            logging.info('\nTrain loss: {:.4f} | Test Loss: {:.4f}'.format(train_loss, 
+                                                                           test_loss))
+            
+            args.writer.add_scalars('epoch_loss', {'train': train_loss,
+                                          'valid': test_loss}, epoch+1)
+        else:
+            logging.info('\nTrain loss: {:.4f}'.format(train_loss))
 
-        logging.info('\nTrain loss: {:.4f} | Valid loss: {:.4f}'.format(
-            epoch_train_loss, epoch_valid_loss))
-
-        args.writer.add_scalars('epoch_loss', {'train': epoch_train_loss,
-                                          'valid': epoch_valid_loss}, epoch+1)
-
+        
+        """
         if epoch_valid_acc >= best_valid_acc:
             patience_counter = 0
             best_epoch = epoch + 1
@@ -123,5 +130,5 @@ def train(model, args):
     logging.info('\nBest Valid: Epoch {} - Loss {:.4f} - Acc. {:.4f}'.format(
         best_epoch, best_valid_loss, best_valid_acc))
     logging.info('Test: Loss {:.4f} - Acc. {:.4f}'.format(test_loss, test_acc))
-
+    """
     return test_loss

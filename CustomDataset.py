@@ -142,17 +142,24 @@ class CustomDataset (Dataset):
     def __init__(self, split_type='train'):
         np.random.seed(7)
         
-        synth_data = self.load_synth_data()
-        print(f'len(synth_data): {len(synth_data)}')
-         
         icdar_data = self.load_icdar_data(split_type)
         print(f'len(icdar_data): {len(icdar_data)}')
         
-        if DEBUG:
-            self.debug_data(synth_data=synth_data, icdar_data=icdar_data)
-            # self.debug_data(icdar_data=icdar_data)
+        if split_type == 'train':
+            synth_data = self.load_synth_data()
+            print(f'len(synth_data): {len(synth_data)}')
+            
+            if DEBUG:
+                self.debug_data(synth_data=synth_data, icdar_data=icdar_data)
+
+            self.data = synth_data + icdar_data
+            
+        else: 
+            if DEBUG:
+                self.debug_data(icdar_data=icdar_data)
+                
+            self.data = icdar_data
         
-        self.data = synth_data + icdar_data
         random.shuffle(self.data)
        
      
