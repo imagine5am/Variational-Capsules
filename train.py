@@ -81,7 +81,8 @@ def train(model, args):
         # epoch_train_acc = running_acc / sample_count
 
         if args.step % 5 == 0:
-            test_loss, test_acc = evaluate(model, args, test_dataloader)
+            print(f'Inside if statement. args.step: {args.step}')
+            test_loss = evaluate(model, args, test_dataloader)
             logging.info('\nTrain loss: {:.4f} | Test Loss: {:.4f}'.format(train_loss, 
                                                                            test_loss))
             
