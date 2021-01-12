@@ -130,7 +130,7 @@ class CapsuleNet(nn.Module):
 
 
     def forward(self, x):
-        print_flag = False
+        print_flag = True
         if print_flag: print('-' * 70)
 
         # Out ← [?, A, F, F]
@@ -184,7 +184,7 @@ class CapsuleNet(nn.Module):
         # Out ← a [?, B, 1, 1, 1, F, F, K, K], v [?, B, C, P*P, 1, F, F, K, K]
         a,v = self.SecondaryConvCaps(*prim_caps)
         if print_flag: print(f'SecondaryConvCaps Shape: {a.shape}, {v.shape}')
-
+        
         # Out ← a [?, C, F, F], v [?, C, P, P, F, F]
         sec_caps = self.SecondaryConvRouting(a,v)
         if print_flag: print(f'SecondaryConvRouting Shape: {sec_caps[0].shape}, {sec_caps[1].shape}')

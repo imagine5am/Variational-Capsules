@@ -47,6 +47,9 @@ def train(model, args):
         logging.info('\nEpoch {}/{}:\n'.format(epoch+1, args.n_epochs))
 
         for i, (inputs, labels) in enumerate(tqdm(train_dataloader)):
+            if inputs.shape(0) == 1:
+                continue
+            
             args.step = (epoch * num_train_samples) + i + 1
             
             if DEBUG:

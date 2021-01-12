@@ -21,6 +21,8 @@ def evaluate(model, args, dataloader):
         # num_train_samples = len(dataloader.dataset)
         
         for i, (inputs, labels) in enumerate(tqdm(dataloader)):
+            if inputs.shape(0) == 1:
+                continue
             
             if DEBUG:
                 print(f'inputs.shape: {inputs.shape} | inputs.dtype: {inputs.dtype}')
@@ -41,7 +43,9 @@ def evaluate(model, args, dataloader):
 
             sample_count += inputs.size(0)
             running_loss += loss.item() * inputs.size(0) # smaller batches count less
+            # running_acc += (yhat.argmax(-1) == labels.data.cuda()).sum().item() # n_corrects
 
         loss = running_loss / sample_count
+        # acc = running_acc / sample_count
 
-    return loss
+    # return loss, acc
