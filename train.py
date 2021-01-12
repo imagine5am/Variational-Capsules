@@ -28,12 +28,9 @@ def train(model, args):
     best_valid_acc = 0
     patience_counter = 0
     
-    train_dataset = CustomDataset()
-    train_dataloader = DataLoader(train_dataset, shuffle=True, pin_memory=True, num_workers=8,batch_size=args.batch_size)
-    num_train_samples = len(train_dataloader.dataset)
-    
-    test_dataset = CustomDataset(split_type='test')
-    test_dataloader = DataLoader(test_dataset, pin_memory=True, num_workers=8,batch_size=args.batch_size)
+    dataset = CustomDataset()
+    dataloader = DataLoader(dataset, shuffle=True, pin_memory=True, num_workers=8,batch_size=args.batch_size)
+    num_train_samples = len(dataloader.dataset)
     
     # loss_fn = F.BCEWithLogitsLoss
     loss_fn = nn.BCELoss()
@@ -46,7 +43,7 @@ def train(model, args):
 
         logging.info('\nEpoch {}/{}:\n'.format(epoch+1, args.n_epochs))
 
-        for i, (inputs, labels) in enumerate(tqdm(train_dataloader)):
+        for i, (inputs, labels) in enumerate(tqdm(dataloader)):
             if inputs.shape[0] == 1:
                 continue
             
@@ -84,12 +81,22 @@ def train(model, args):
         # epoch_train_acc = running_acc / sample_count
 
         if (epoch+1) % 5 == 0:
-            test_loss = evaluate(model, args, test_dataloader)
+            del dataset, dataloader
+            dataset = CustomDataset(split_type='test')
+            dataloader = DataLoader(dataset, pin_memory=True, num_workers=8,batch_size=args.batch_size)
+            
+            test_loss = evaluate(model, args, dataloader)
             logging.info('\nTrain loss: {:.4f} | Test Loss: {:.4f}'.format(train_loss, 
                                                                            test_loss))
             
             args.writer.add_scalars('epoch_loss', {'train': train_loss,
                                           'valid': test_loss}, epoch+1)
+            
+            dataset = CustomDataset()
+            dataloader = DataLoader(dataset, shuffle=True, pin_memory=True, 
+                                          num_workers=8, batch_size=args.batch_size)
+            num_train_samples = len(dataloader.dataset)
+            
         else:
             logging.info('\nTrain loss: {:.4f}'.format(train_loss))
 
