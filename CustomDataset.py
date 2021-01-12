@@ -183,7 +183,7 @@ class CustomDataset (Dataset):
         
         print('Loading Synthetic training data...')
         
-        for k, v in tqdm(train_files[:100]):
+        for k, v in tqdm(train_files):
             num_frames = v['word_ann'].shape[0]
             image_nums = np.random.choice(num_frames, 2, replace=False)
             video_dir = os.path.join(frames_dir, k)
@@ -229,7 +229,7 @@ class CustomDataset (Dataset):
         
         data = []
         
-        for video_name in tqdm(allfiles[:3]):
+        for video_name in tqdm(allfiles):
             ann_file = icdar_loc+video_name[:-4]+'_GT.xml'
             ann = parse_ann(ann_file)
 

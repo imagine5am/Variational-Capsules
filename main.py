@@ -29,13 +29,12 @@ def main(args):
     ''''----------------------- EXPERIMENT CONFIG ---------------------------'''
 
     # check number of models already saved in 'experiments' dir, add 1 to get new model number
-    experiments_dir = os.path.join(os.path.split(os.getcwd())[0], 'experiments')
+    experiments_dir = os.path.join(os.getcwd(), 'experiments')
     os.makedirs(experiments_dir, exist_ok=True)
     model_num = len(os.listdir(experiments_dir)) + 1
 
     # create all save dirs
-    model_dir = os.path.join(os.path.split(os.getcwd())[0],
-        'experiments', 'Model_'+str(model_num))
+    model_dir = os.path.join(os.getcwd(), 'experiments', 'Model_'+str(model_num))
     args.summaries_dir = os.path.join(model_dir, 'summaries')
     args.checkpoint_dir = os.path.join(model_dir, 'checkpoint.pt')
     os.makedirs(model_dir, exist_ok=True)
