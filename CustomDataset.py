@@ -185,7 +185,7 @@ class CustomDataset (Dataset):
         
         for k, v in tqdm(train_files):
             num_frames = v['word_ann'].shape[0]
-            image_nums = np.random.choice(num_frames, 2, replace=False)
+            image_nums = np.random.choice(num_frames, 1, replace=False)
             video_dir = os.path.join(frames_dir, k)
             
             im0 = imread(os.path.join(video_dir, 'frame_%d.jpg' % 0))
@@ -217,13 +217,14 @@ class CustomDataset (Dataset):
             
             print('Loading ICDAR training data...')
             icdar_loc = '/mnt/data/Rohit/ICDARVideoDataset/text_in_Video/ch3_train/'
+            selection_ratio = 0.5
         
         elif split_type=='test':
             
             print('Loading ICDAR test data...')
             icdar_loc = '/mnt/data/Rohit/ICDARVideoDataset/text_in_Video/ch3_test/'
-        
-        selection_ratio = 20
+            selection_ratio = 1
+            
         allfiles = list_vids(icdar_loc)
         random.shuffle(allfiles)
         
@@ -235,7 +236,7 @@ class CustomDataset (Dataset):
 
             video_orig = skvideo.io.vread(os.path.join(icdar_loc, video_name))
             num_frames, h, w, _ = video_orig.shape
-            chosen_frames = np.random.choice(num_frames, num_frames//selection_ratio, replace=False)
+            chosen_frames = np.random.choice(num_frames, int(selection_ratio * num_frames), replace=False)
             
             for idx in chosen_frames:
                 frame = resize_and_pad((h, w), video_orig[idx])
@@ -313,7 +314,7 @@ class CustomDataset (Dataset):
 if __name__ == "__main__":
     DEBUG = True
     
-    dataloaders = DataLoader()
-    for i, (frame, mask, dataset) in enumerate(dataloaders.data):
+    dataset = CustomDataset()
+    for i, (frame, mask, dataset_name) in enumerate(dataset.data):
         print(frame.dtype)
         

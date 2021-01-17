@@ -36,6 +36,9 @@ def train(model, args):
     loss_fn = nn.BCELoss()
     # loss_fn = F.cross_entropy
     
+    test_dataset = CustomDataset(split_type='test')
+    test_dataloader = DataLoader(test_dataset, pin_memory=True, num_workers=8,batch_size=args.batch_size)
+    
     for epoch in range(args.n_epochs):
         model.train()
         sample_count = 0
@@ -82,10 +85,8 @@ def train(model, args):
 
         if (epoch+1) % 5 == 0:
             del dataset, dataloader
-            dataset = CustomDataset(split_type='test')
-            dataloader = DataLoader(dataset, pin_memory=True, num_workers=8,batch_size=args.batch_size)
             
-            test_loss = evaluate(model, args, dataloader)
+            test_loss = evaluate(model, args, test_dataloader)
             logging.info('\nTrain loss: {:.4f} | Test Loss: {:.4f}'.format(train_loss, 
                                                                            test_loss))
             
