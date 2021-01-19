@@ -32,12 +32,12 @@ def train(model, args):
     dataloader = DataLoader(dataset, shuffle=True, pin_memory=True, num_workers=8,batch_size=args.batch_size)
     num_train_samples = len(dataloader.dataset)
     
-    # loss_fn = F.BCEWithLogitsLoss
-    loss_fn = nn.BCELoss()
-    # loss_fn = F.cross_entropy
-    
     test_dataset = CustomDataset(split_type='test')
     test_dataloader = DataLoader(test_dataset, pin_memory=True, num_workers=8,batch_size=args.batch_size)
+    
+    # loss_fn = F.BCEWithLogitsLoss
+    loss_fn = nn.BCELoss()
+    # loss_fn = F.cross_entropy    
     
     for epoch in range(args.n_epochs):
         model.train()
