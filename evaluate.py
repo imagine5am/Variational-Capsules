@@ -15,7 +15,7 @@ def evaluate(model, args, dataloader):
     running_loss = 0
     # running_acc = 0
     
-    loss_fn = nn.BCELoss(reduce='sum')
+    loss_fn = nn.BCELoss()
 
     with torch.no_grad():
         # num_train_samples = len(dataloader.dataset)
