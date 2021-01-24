@@ -82,10 +82,16 @@ def train(model, args):
 
         train_loss = running_loss / sample_count
         # epoch_train_acc = running_acc / sample_count
-
-        if (epoch+1) % 5 == 0:
+        
+        if (epoch+1) % 2 == 0:
             del dataset, dataloader
             
+            dataset = CustomDataset()
+            dataloader = DataLoader(dataset, shuffle=True, pin_memory=True, 
+                                          num_workers=8, batch_size=args.batch_size)
+            num_train_samples = len(dataloader.dataset)
+        
+        if (epoch+1) % 5 == 0:
             test_loss = evaluate(model, args, test_dataloader)
             logging.info('\nTrain loss: {:.4f} | Test Loss: {:.4f}'.format(train_loss, 
                                                                            test_loss))
@@ -93,10 +99,7 @@ def train(model, args):
             args.writer.add_scalars('epoch_loss', {'train': train_loss,
                                           'valid': test_loss}, epoch+1)
             
-            dataset = CustomDataset()
-            dataloader = DataLoader(dataset, shuffle=True, pin_memory=True, 
-                                          num_workers=8, batch_size=args.batch_size)
-            num_train_samples = len(dataloader.dataset)
+            
             
         else:
             logging.info('\nTrain loss: {:.4f}'.format(train_loss))
