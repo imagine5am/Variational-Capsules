@@ -36,7 +36,7 @@ def train(model, args):
     test_dataloader = DataLoader(test_dataset, pin_memory=True, num_workers=8,batch_size=args.batch_size)
     
     # loss_fn = F.BCEWithLogitsLoss
-    loss_fn = nn.BCELoss()
+    loss_fn = nn.BCELoss(reduce='sum')
     # loss_fn = F.cross_entropy    
     
     for epoch in range(args.n_epochs):
