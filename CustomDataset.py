@@ -298,7 +298,7 @@ class CustomDataset (Dataset):
         
         print(f'Loading ICDAR {split_type} data...')
         ann_loc = '/mnt/data/Rohit/VideoCapsNet/data/RoadText-1K/Ground_truths/Localisation'
-        video_dir = os.path.join('/mnt/data/Rohit/VideoCapsNet/data/RoadText-1K/train', split_type)
+        video_dir = os.path.join('/mnt/data/Rohit/VideoCapsNet/data/RoadText-1K', split_type)
         
         
         if split_type == 'train':
