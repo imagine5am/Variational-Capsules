@@ -1,9 +1,11 @@
 
 import cv2
 import h5py
+import json
 import numpy as np
 import os
 import random
+import re
 import skvideo.io 
 import xml.etree.ElementTree as ET
 
@@ -93,7 +95,7 @@ def get_det_annotations(ann_file, split='train'):
         return test_split
 
 
-def create_mask(shape, pts):
+def create_mask(shape, pts, is_rectangle=False):
     mask = np.zeros(shape, dtype=np.uint8)
     mask = Image.fromarray(mask, 'L')
     draw = ImageDraw.Draw(mask)
@@ -101,10 +103,15 @@ def create_mask(shape, pts):
     fill_val = 255 if DEBUG else 1
     
     for pt in pts:
-        if isinstance(pt, np.ndarray):
-            draw.polygon(pt.tolist(), fill=fill_val)
+        
+        if is_rectangle:
+            draw.rectangle(pt, fill=fill_val)
+            
         else:
-            draw.polygon(pt, fill=fill_val)
+            if isinstance(pt, np.ndarray):
+                draw.polygon(pt.tolist(), fill=fill_val)
+            else:
+                draw.polygon(pt, fill=fill_val)
     del draw
     # show(mask)
     mask = np.asarray(mask).copy()
@@ -117,7 +124,7 @@ def list_vids(dir):
     return files
 
 
-def parse_ann(file):
+def parse_icdar_ann(file):
     '''
     Returns a dict which is something like:
     {frame_num:{object_id: polygon_pts_list, ...}, ...}
@@ -138,27 +145,57 @@ def parse_ann(file):
     return ann
 
 
+def process_roadtext_ann(ann_file):  
+    with open(ann_file) as f:
+        data = json.load(f)
+    
+    data_dict = {}  # {<video_num1>:{0: [..], 1: [..], ..}}
+    
+    for item in data:
+        if item['labels']:
+            video_num = int(item['videoName'])
+            x1 = re.search(r'\d+\.jpg', item['name']) # "name": "dataset_imgs/99-0000280.jpg",
+            page_num = int(item['name'][x1.start():x1.end()-4]) - 1
+
+            if video_num not in data_dict:
+                data_dict[video_num] = {}
+
+            data_dict[video_num][page_num] = {}
+            
+            for label in item['labels']:
+                box = label['box2d']
+                pts = [box['x1'], box['y1'], box['x2'], box['y2']]
+                data_dict[video_num][page_num][label['id']] = pts
+                
+    return data_dict
+
+
 class CustomDataset (Dataset):
     def __init__(self, split_type='train'):
         np.random.seed(7)
         
-        icdar_data = self.load_icdar_data(split_type)
-        print(f'len(icdar_data): {len(icdar_data)}')
+        # icdar_data = self.load_icdar_data(split_type)
+        # print(f'len(icdar_data): {len(icdar_data)}')
+        
+        roadtext_data = self.load_roadtext_data(split_type)
+        print(f'len(roadtext_data): {len(roadtext_data)}')
         
         if split_type == 'train':
             synth_data = self.load_synth_data()
             print(f'len(synth_data): {len(synth_data)}')
             
             if DEBUG:
-                self.debug_data(synth_data=synth_data, icdar_data=icdar_data)
+                self.debug_data(synth_data=synth_data, icdar_data=icdar_data, roadtext_data=roadtext_data)
 
-            self.data = synth_data + icdar_data
+            self.data = synth_data + icdar_data + roadtext_data
             
         else: 
             if DEBUG:
-                self.debug_data(icdar_data=icdar_data)
+                self.debug_data(roadtext_data=roadtext_data)
+                # self.debug_data(icdar_data=icdar_data, roadtext_data=roadtext_data)
                 
-            self.data = icdar_data
+            self.data = roadtext_data
+            # self.data = icdar_data + roadtext_data
         
         random.shuffle(self.data)
        
@@ -232,7 +269,7 @@ class CustomDataset (Dataset):
         
         for video_name in tqdm(allfiles):
             ann_file = icdar_loc+video_name[:-4]+'_GT.xml'
-            ann = parse_ann(ann_file)
+            ann = parse_icdar_ann(ann_file)
 
             video_orig = skvideo.io.vread(os.path.join(icdar_loc, video_name))
             num_frames, h, w, _ = video_orig.shape
@@ -257,6 +294,55 @@ class CustomDataset (Dataset):
         return data
     
     
+    def load_roadtext_data(self, split_type='train'):
+        
+        print(f'Loading ICDAR {split_type} data...')
+        ann_loc = '/mnt/data/Rohit/VideoCapsNet/data/RoadText-1K/Ground_truths/Localisation'
+        video_dir = os.path.join('/mnt/data/Rohit/VideoCapsNet/data/RoadText-1K/train', split_type)
+        
+        
+        if split_type == 'train':
+            selection_ratio = 0.5
+        else:
+            selection_ratio = 1
+        
+        retVal = []
+        
+        for dir in os.listdir(video_dir):
+
+            ann_file = os.path.join(ann_loc, dir+'_videos_results.json')
+            ann = process_roadtext_ann(ann_file)
+
+            curr_dir = os.path.join(video_dir, dir)
+                        
+            for video_name in os.listdir(curr_dir):
+                
+                vid_num = int(video_name[:-4])
+                vid_file = os.path.join(curr_dir, video_name)
+                video_orig = skvideo.io.vread(vid_file)
+                
+                num_frames, h, w, _ = video_orig.shape
+                chosen_frames = np.random.choice(num_frames, int(selection_ratio * num_frames), replace=False)
+                
+                for idx in chosen_frames:
+                    frame = resize_and_pad((h, w), video_orig[idx])
+                    # imshow(frame)
+                    
+                    if idx in ann and ann[idx]:
+                        
+                        frame_mask = create_mask((h, w), ann[vid_num][idx], is_rectangle=True)
+                        mask_resized = resize_and_pad((h, w), frame_mask)
+                        mask = np.expand_dims(mask_resized, axis=-1)
+                        # imshow(frame_mask)
+                    else:
+                        # print(f'ann not in {idx} - {video_name}')
+                        mask = np.zeros((out_h, out_w, 1), dtype=np.uint8)
+
+                    retVal.append((frame, mask, 'roadtext'))   
+                    
+        return retVal
+    
+    
     '''
     def load_CAT_data(self, split_type='train'):
         if split_type == 'train':
@@ -268,53 +354,43 @@ class CustomDataset (Dataset):
     '''
     
     
-    def debug_data(self, synth_data=None, icdar_data=None):
+    def debug_data(self, synth_data=None, icdar_data=None, roadtext_data=None):
         sample_size = 100
         apply_mask = False
         
-        if synth_data:
-            synth_samples = np.random.choice(len(synth_data), sample_size, replace=False)
-            base_loc = os.path.join(debug_dir, 'synth')
-            if not os.path.exists(base_loc):
-                os.makedirs(base_loc)
+        dataset = {'synth': synth_data,
+                   'icdar': icdar_data, 
+                   'roadtext': roadtext_data
+                   }
             
-            for idx in synth_samples:
-                frame, mask, _ = synth_data[idx]
+        
+        for dataset_name, dataset in dataset:
+            if dataset:
                 
-                if apply_mask:
-                    save_loc = os.path.join(base_loc, str(idx)+'_applied_mask.jpg')
-                    imsave(save_loc, frame * mask)
-                else:
-                    frame_save_loc = os.path.join(base_loc, str(idx)+'_frame.jpg')
-                    mask_save_loc = os.path.join(base_loc, str(idx)+'_mask.jpg')
-                    imsave(frame_save_loc, frame)
-                    mask = np.squeeze(mask, axis=-1)
-                    imsave(mask_save_loc, mask)
-                    
-        if icdar_data:
-            synth_samples = np.random.choice(len(icdar_data), sample_size, replace=False)
-            base_loc = os.path.join(debug_dir, 'icdar')
-            if not os.path.exists(base_loc):
-                os.makedirs(base_loc)
-            
-            for idx in synth_samples:
-                frame, mask, _ = icdar_data[idx]
+                samples = np.random.choice(len(dataset), sample_size, replace=False)
                 
-                if apply_mask:
-                    save_loc = os.path.join(base_loc, str(idx)+'_applied_mask.jpg')
-                    imsave(save_loc, frame * mask)
-                else:
-                    frame_save_loc = os.path.join(base_loc, str(idx)+'_frame.jpg')
-                    mask_save_loc = os.path.join(base_loc, str(idx)+'_mask.jpg')
-                    imsave(frame_save_loc, frame)
-                    mask = np.squeeze(mask, axis=-1)
-                    imsave(mask_save_loc, mask)
+                base_loc = os.path.join(debug_dir, dataset_name)
+                if not os.path.exists(base_loc):
+                    os.makedirs(base_loc)
+                
+                for idx in samples:
+                    frame, mask, _ = synth_data[idx]
 
-            
+                    if apply_mask:
+                        save_loc = os.path.join(base_loc, str(idx)+'_applied_mask.jpg')
+                        imsave(save_loc, frame * mask)
+                    else:
+                        frame_save_loc = os.path.join(base_loc, str(idx)+'_frame.jpg')
+                        mask_save_loc = os.path.join(base_loc, str(idx)+'_mask.jpg')
+                        imsave(frame_save_loc, frame)
+                        mask = np.squeeze(mask, axis=-1)
+                        imsave(mask_save_loc, mask)
+                    
+
 if __name__ == "__main__":
     DEBUG = True
     
-    dataset = CustomDataset()
+    dataset = CustomDataset(split_type='test')
     for i, (frame, mask, dataset_name) in enumerate(dataset.data):
         print(frame.dtype)
         
