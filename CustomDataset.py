@@ -17,7 +17,7 @@ from tqdm import tqdm
 
 out_h, out_w = 480, 480
 debug_dir = './debug'
-DEBUG = False
+DEBUG = True
 
 if not os.path.exists(debug_dir):
     os.makedirs(debug_dir)
@@ -296,7 +296,7 @@ class CustomDataset (Dataset):
     
     def load_roadtext_data(self, split_type='train'):
         
-        print(f'Loading ICDAR {split_type} data...')
+        print(f'Loading Roadtext {split_type} data...')
         ann_loc = '/mnt/data/Rohit/VideoCapsNet/data/RoadText-1K/Ground_truths/Localisation'
         video_dir = os.path.join('/mnt/data/Rohit/VideoCapsNet/data/RoadText-1K', split_type)
         
@@ -315,7 +315,7 @@ class CustomDataset (Dataset):
 
             curr_dir = os.path.join(video_dir, dir)
                         
-            for video_name in os.listdir(curr_dir):
+            for video_name in tqdm(os.listdir(curr_dir)):
                 
                 vid_num = int(video_name[:-4])
                 vid_file = os.path.join(curr_dir, video_name)
