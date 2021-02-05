@@ -358,15 +358,15 @@ class CustomDataset (Dataset):
         sample_size = 100
         apply_mask = False
         
-        dataset = {'synth': synth_data,
+        dataset_dict = {'synth': synth_data,
                    'icdar': icdar_data, 
                    'roadtext': roadtext_data
                    }
             
         
-        for dataset_name, dataset in dataset:
+        for dataset_name, dataset in dataset_dict:
+            
             if dataset:
-                
                 samples = np.random.choice(len(dataset), sample_size, replace=False)
                 
                 base_loc = os.path.join(debug_dir, dataset_name)
