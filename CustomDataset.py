@@ -307,14 +307,14 @@ class CustomDataset (Dataset):
         
         retVal = []
         
-        for video_set in os.listdir(video_dir)[:1]:
+        for video_set in os.listdir(video_dir):
             print(f'Loading videos in set {video_set}...')
             ann_file = os.path.join(ann_loc, video_set+'_videos_results.json')
             ann = process_roadtext_ann(ann_file)
             
             curr_dir = os.path.join(video_dir, video_set)
                         
-            for video_name in tqdm(os.listdir(curr_dir)[:20]):
+            for video_name in tqdm(os.listdir(curr_dir)):
                 
                 vid_num = int(video_name[:-4])
                 vid_file = os.path.join(curr_dir, video_name)
