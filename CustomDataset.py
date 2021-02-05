@@ -374,7 +374,7 @@ class CustomDataset (Dataset):
                     os.makedirs(base_loc)
                 
                 for idx in samples:
-                    frame, mask, _ = synth_data[idx]
+                    frame, mask, _ = dataset[idx]
 
                     if apply_mask:
                         save_loc = os.path.join(base_loc, str(idx)+'_applied_mask.jpg')
