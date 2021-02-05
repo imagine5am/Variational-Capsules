@@ -17,7 +17,7 @@ from tqdm import tqdm
 
 out_h, out_w = 480, 480
 debug_dir = './debug'
-DEBUG = True
+DEBUG = False
 
 if not os.path.exists(debug_dir):
     os.makedirs(debug_dir)
@@ -174,13 +174,13 @@ class CustomDataset (Dataset):
     def __init__(self, split_type='train'):
         np.random.seed(7)
         
-        # icdar_data = self.load_icdar_data(split_type)
-        # print(f'len(icdar_data): {len(icdar_data)}')
-        
         roadtext_data = self.load_roadtext_data(split_type)
         print(f'len(roadtext_data): {len(roadtext_data)}')
         
         if split_type == 'train':
+            icdar_data = self.load_icdar_data(split_type)
+            print(f'len(icdar_data): {len(icdar_data)}')
+            
             synth_data = self.load_synth_data()
             print(f'len(synth_data): {len(synth_data)}')
             
@@ -308,7 +308,7 @@ class CustomDataset (Dataset):
         retVal = []
         
         for video_set in os.listdir(video_dir)[:1]:
-            print(f'Loading videos in {video_set}...')
+            print(f'Loading videos in set {video_set}...')
             ann_file = os.path.join(ann_loc, video_set+'_videos_results.json')
             ann = process_roadtext_ann(ann_file)
             
