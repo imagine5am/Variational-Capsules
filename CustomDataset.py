@@ -105,7 +105,6 @@ def create_mask(shape, pts, is_rectangle=False):
     for pt in pts:
         
         if is_rectangle:
-            print(pt)
             draw.rectangle(pt, fill=fill_val)
             
         else:
@@ -329,7 +328,7 @@ class CustomDataset (Dataset):
                     # imshow(frame)
                     
                     # ann[video_num][frame_num][object_id]
-                    if idx in ann[vid_num] and ann[vid_num][idx]:
+                    if vid_num in ann and idx in ann[vid_num] and ann[vid_num][idx]:
                         frame_mask = create_mask((h, w), ann[vid_num][idx].values(), is_rectangle=True)
                         mask_resized = resize_and_pad((h, w), frame_mask)
                         mask = np.expand_dims(mask_resized, axis=-1)
