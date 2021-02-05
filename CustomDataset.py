@@ -100,7 +100,7 @@ def create_mask(shape, pts, is_rectangle=False):
     mask = Image.fromarray(mask, 'L')
     draw = ImageDraw.Draw(mask)
     
-    fill_val = 255 if DEBUG else 1
+    fill_val = 1
     
     for pt in pts:
         
@@ -164,7 +164,7 @@ def process_roadtext_ann(ann_file):
             
             for label in item['labels']:
                 box = label['box2d']
-                pts = [box['x1'], box['y1'], box['x2'], box['y2']]
+                pts = [round(box['x1']), round(box['y1']), round(box['x2']), round(box['y2'])]
                 data_dict[video_num][page_num][label['id']] = pts
                 
     return data_dict
@@ -383,7 +383,7 @@ class CustomDataset (Dataset):
                         frame_save_loc = os.path.join(base_loc, str(idx)+'_frame.jpg')
                         mask_save_loc = os.path.join(base_loc, str(idx)+'_mask.jpg')
                         imsave(frame_save_loc, frame)
-                        mask = np.squeeze(mask, axis=-1)
+                        mask = np.squeeze(mask, axis=-1) * 255
                         imsave(mask_save_loc, mask)
                     
 
