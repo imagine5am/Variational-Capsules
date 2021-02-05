@@ -356,7 +356,7 @@ class CustomDataset (Dataset):
     
     def debug_data(self, synth_data=None, icdar_data=None, roadtext_data=None):
         sample_size = 100
-        apply_mask = True
+        apply_mask = False
         
         dataset_dict = {'synth': synth_data,
                    'icdar': icdar_data, 
