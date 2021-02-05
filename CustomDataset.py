@@ -364,7 +364,7 @@ class CustomDataset (Dataset):
                    }
             
         
-        for dataset_name, dataset in dataset_dict:
+        for dataset_name, dataset in dataset_dict.items():
             
             if dataset:
                 samples = np.random.choice(len(dataset), sample_size, replace=False)
