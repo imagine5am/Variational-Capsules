@@ -105,6 +105,7 @@ def create_mask(shape, pts, is_rectangle=False):
     for pt in pts:
         
         if is_rectangle:
+            print(pt)
             draw.rectangle(pt, fill=fill_val)
             
         else:
