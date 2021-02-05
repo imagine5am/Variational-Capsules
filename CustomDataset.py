@@ -156,17 +156,17 @@ def process_roadtext_ann(ann_file):
         if item['labels']:
             video_num = int(item['videoName'])
             x1 = re.search(r'\d+\.jpg', item['name']) # "name": "dataset_imgs/99-0000280.jpg",
-            page_num = int(item['name'][x1.start():x1.end()-4]) - 1
+            frame_num = int(item['name'][x1.start():x1.end()-4]) - 1
 
             if video_num not in data_dict:
                 data_dict[video_num] = {}
 
-            data_dict[video_num][page_num] = {}
+            data_dict[video_num][frame_num] = {}
             
             for label in item['labels']:
                 box = label['box2d']
                 pts = [round(box['x1']), round(box['y1']), round(box['x2']), round(box['y2'])]
-                data_dict[video_num][page_num][label['id']] = pts
+                data_dict[video_num][frame_num][label['id']] = pts
                 
     return data_dict
 
@@ -301,7 +301,6 @@ class CustomDataset (Dataset):
         ann_loc = '/mnt/data/Rohit/VideoCapsNet/data/RoadText-1K/Ground_truths/Localisation'
         video_dir = os.path.join('/mnt/data/Rohit/VideoCapsNet/data/RoadText-1K', split_type)
         
-        
         if split_type == 'train':
             selection_ratio = 0.5
         else:
@@ -309,29 +308,29 @@ class CustomDataset (Dataset):
         
         retVal = []
         
-        for dir in os.listdir(video_dir)[:1]:
-            print(f'Loading videos in {dir}...')
-            ann_file = os.path.join(ann_loc, dir+'_videos_results.json')
+        for video_set in os.listdir(video_dir)[:1]:
+            print(f'Loading videos in {video_set}...')
+            ann_file = os.path.join(ann_loc, video_set+'_videos_results.json')
             ann = process_roadtext_ann(ann_file)
-
-            curr_dir = os.path.join(video_dir, dir)
+            
+            curr_dir = os.path.join(video_dir, video_set)
                         
             for video_name in tqdm(os.listdir(curr_dir)[:20]):
                 
                 vid_num = int(video_name[:-4])
                 vid_file = os.path.join(curr_dir, video_name)
                 video_orig = skvideo.io.vread(vid_file)
-                
                 num_frames, h, w, _ = video_orig.shape
+                
                 chosen_frames = np.random.choice(num_frames, int(selection_ratio * num_frames), replace=False)
                 
                 for idx in chosen_frames:
                     frame = resize_and_pad((h, w), video_orig[idx])
                     # imshow(frame)
                     
-                    if idx in ann and ann[idx]:
-                        
-                        frame_mask = create_mask((h, w), ann[vid_num][idx], is_rectangle=True)
+                    # ann[video_num][frame_num][object_id]
+                    if idx in ann[vid_num] and ann[vid_num][idx]:
+                        frame_mask = create_mask((h, w), ann[vid_num][idx].values(), is_rectangle=True)
                         mask_resized = resize_and_pad((h, w), frame_mask)
                         mask = np.expand_dims(mask_resized, axis=-1)
                         # imshow(frame_mask)
@@ -360,14 +359,15 @@ class CustomDataset (Dataset):
         apply_mask = False
         
         dataset_dict = {'synth': synth_data,
-                   'icdar': icdar_data, 
-                   'roadtext': roadtext_data
-                   }
+                        'icdar': icdar_data, 
+                        'roadtext': roadtext_data
+                        }
             
         
         for dataset_name, dataset in dataset_dict.items():
             
             if dataset:
+                print(f'Debugging {dataset_name} dataset...')
                 samples = np.random.choice(len(dataset), sample_size, replace=False)
                 
                 base_loc = os.path.join(debug_dir, dataset_name)
