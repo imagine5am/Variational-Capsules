@@ -83,7 +83,7 @@ def train(model, args):
         train_loss = running_loss / sample_count
         # epoch_train_acc = running_acc / sample_count
         
-        if (epoch+1) % 2 == 0:
+        if (epoch+1) % 5 == 0:
             del dataset, dataloader
             
             dataset = CustomDataset()
