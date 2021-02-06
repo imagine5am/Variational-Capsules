@@ -308,6 +308,8 @@ class CustomDataset (Dataset):
         
         retVal = []
         
+        problematic_videos = []
+        
         for video_set in os.listdir(video_dir):
             print(f'Loading videos in set {video_set}...')
             ann_file = os.path.join(ann_loc, video_set+'_videos_results.json')
@@ -345,8 +347,9 @@ class CustomDataset (Dataset):
                     traceback.print_exc()
                     # print(e)
                 finally:
-                    print(f'Problem in video {video_name}')
-                       
+                    problematic_videos.append(video_name)
+                    
+        print(f'Problem in videos: {problematic_videos}')               
         return retVal
     
     
