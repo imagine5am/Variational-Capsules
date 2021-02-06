@@ -349,7 +349,7 @@ class CustomDataset (Dataset):
                 finally:
                     problematic_videos.append(video_name)
                     
-        print(f'Problem in videos: {problematic_videos}')               
+        print(f'Problem in videos: {sorted(problematic_videos)}')               
         return retVal
     
     
