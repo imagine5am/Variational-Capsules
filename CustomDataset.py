@@ -339,9 +339,11 @@ class CustomDataset (Dataset):
                             mask = np.zeros((out_h, out_w, 1), dtype=np.uint8)
 
                         retVal.append((frame, mask, 'roadtext')) 
+                except ValueError:
+                    pass
                 except Exception as e: 
                     traceback.print_exc()
-                    print(e)
+                    # print(e)
                 finally:
                     print(f'Problem in video {video_name}')
                        
