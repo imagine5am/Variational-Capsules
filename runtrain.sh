@@ -4,4 +4,4 @@
 # export PATH=/usr/local/cuda-10.1/bin/:$PATH
 # source var-caps/bin/activate
 
-CUDA_VISIBLE_DEVICES=2 python -u main.py |& tee -a logs/logs_6
+CUDA_VISIBLE_DEVICES=0 python -u main.py |& tee -a logs/logs_6
