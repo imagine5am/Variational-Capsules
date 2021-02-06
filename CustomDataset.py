@@ -7,6 +7,7 @@ import os
 import random
 import re
 import skvideo.io 
+import traceback
 import xml.etree.ElementTree as ET
 
 from PIL import Image, ImageDraw
@@ -313,32 +314,36 @@ class CustomDataset (Dataset):
             ann = process_roadtext_ann(ann_file)
             
             curr_dir = os.path.join(video_dir, video_set)
-                        
+                 
             for video_name in tqdm(os.listdir(curr_dir)):
-                
-                vid_num = int(video_name[:-4])
-                vid_file = os.path.join(curr_dir, video_name)
-                video_orig = skvideo.io.vread(vid_file)
-                num_frames, h, w, _ = video_orig.shape
-                
-                chosen_frames = np.random.choice(num_frames, int(selection_ratio * num_frames), replace=False)
-                
-                for idx in chosen_frames:
-                    frame = resize_and_pad((h, w), video_orig[idx])
-                    # imshow(frame)
-                    
-                    # ann[video_num][frame_num][object_id]
-                    if vid_num in ann and idx in ann[vid_num] and ann[vid_num][idx]:
-                        frame_mask = create_mask((h, w), ann[vid_num][idx].values(), is_rectangle=True)
-                        mask_resized = resize_and_pad((h, w), frame_mask)
-                        mask = np.expand_dims(mask_resized, axis=-1)
-                        # imshow(frame_mask)
-                    else:
-                        # print(f'ann not in {idx} - {video_name}')
-                        mask = np.zeros((out_h, out_w, 1), dtype=np.uint8)
+                try:     
+                    vid_num = int(video_name[:-4])
+                    vid_file = os.path.join(curr_dir, video_name)
+                    video_orig = skvideo.io.vread(vid_file)
+                    num_frames, h, w, _ = video_orig.shape
 
-                    retVal.append((frame, mask, 'roadtext'))   
-                    
+                    chosen_frames = np.random.choice(num_frames, int(selection_ratio * num_frames), replace=False)
+
+                    for idx in chosen_frames:
+                        frame = resize_and_pad((h, w), video_orig[idx])
+                        # imshow(frame)
+
+                        # ann[video_num][frame_num][object_id]
+                        if vid_num in ann and idx in ann[vid_num] and ann[vid_num][idx]:
+                            frame_mask = create_mask((h, w), ann[vid_num][idx].values(), is_rectangle=True)
+                            mask_resized = resize_and_pad((h, w), frame_mask)
+                            mask = np.expand_dims(mask_resized, axis=-1)
+                            # imshow(frame_mask)
+                        else:
+                            # print(f'ann not in {idx} - {video_name}')
+                            mask = np.zeros((out_h, out_w, 1), dtype=np.uint8)
+
+                        retVal.append((frame, mask, 'roadtext')) 
+                except Exception as e:
+                    print(f'Problem in video {video_name}') 
+                    traceback.print_exc()
+                    print(e)
+                       
         return retVal
     
     
