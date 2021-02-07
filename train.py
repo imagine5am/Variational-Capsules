@@ -29,11 +29,11 @@ def train(model, args):
     patience_counter = 0
     
     dataset = CustomDataset()
-    dataloader = DataLoader(dataset, shuffle=True, pin_memory=True, num_workers=8,batch_size=args.batch_size)
+    dataloader = DataLoader(dataset, shuffle=True, pin_memory=True, num_workers=0,batch_size=args.batch_size)
     num_train_samples = len(dataloader.dataset)
     
     test_dataset = CustomDataset(split_type='test')
-    test_dataloader = DataLoader(test_dataset, pin_memory=True, num_workers=8,batch_size=args.batch_size)
+    test_dataloader = DataLoader(test_dataset, pin_memory=True, num_workers=0,batch_size=args.batch_size)
     
     # loss_fn = F.BCEWithLogitsLoss
     loss_fn = nn.BCELoss()
@@ -88,7 +88,7 @@ def train(model, args):
             
             dataset = CustomDataset()
             dataloader = DataLoader(dataset, shuffle=True, pin_memory=True, 
-                                          num_workers=8, batch_size=args.batch_size)
+                                          num_workers=0, batch_size=args.batch_size)
             num_train_samples = len(dataloader.dataset)
         
         if (epoch+1) % 5 == 0:
