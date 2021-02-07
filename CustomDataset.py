@@ -175,9 +175,6 @@ class CustomDataset (Dataset):
     def __init__(self, split_type='train'):
         np.random.seed(7)
         
-        roadtext_data = self.load_roadtext_data(split_type)
-        print(f'len(roadtext_data): {len(roadtext_data)}')
-        
         if split_type == 'train':
             icdar_data = self.load_icdar_data(split_type)
             print(f'len(icdar_data): {len(icdar_data)}')
@@ -186,11 +183,15 @@ class CustomDataset (Dataset):
             print(f'len(synth_data): {len(synth_data)}')
             
             if DEBUG:
-                self.debug_data(synth_data=synth_data, icdar_data=icdar_data, roadtext_data=roadtext_data)
+                self.debug_data(synth_data=synth_data, icdar_data=icdar_data)# , roadtext_data=roadtext_data)
 
-            self.data = synth_data + icdar_data + roadtext_data
+            self.data = synth_data + icdar_data # + roadtext_data
             
         else: 
+            
+            roadtext_data = self.load_roadtext_data(split_type)
+            print(f'len(roadtext_data): {len(roadtext_data)}')
+            
             if DEBUG:
                 self.debug_data(roadtext_data=roadtext_data)
                 # self.debug_data(icdar_data=icdar_data, roadtext_data=roadtext_data)
