@@ -309,15 +309,15 @@ class CustomDataset (Dataset):
         
         retVal = []
         
-        problematic_videos = []
-        
         for video_set in os.listdir(video_dir):
             print(f'Loading videos in set {video_set}...')
             ann_file = os.path.join(ann_loc, video_set+'_videos_results.json')
             ann = process_roadtext_ann(ann_file)
             
             curr_dir = os.path.join(video_dir, video_set)
-                 
+            
+            problematic_videos = []
+            
             for video_name in tqdm(os.listdir(curr_dir)):
                 try:     
                     vid_num = int(video_name[:-4])
@@ -348,9 +348,11 @@ class CustomDataset (Dataset):
                     traceback.print_exc()
                     # print(e)
                 finally:
-                    problematic_videos.append(video_name)
-                    
-        print(f'Problem in videos: {sorted(problematic_videos)}')               
+                    problematic_videos.append(vid_num)
+            
+            print(f'Problem in videos: {sorted(problematic_videos)}')
+            print(f'len(problematic_videos): {len(problematic_videos)}')               
+        
         return retVal
     
     
