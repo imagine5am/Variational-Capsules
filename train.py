@@ -32,7 +32,7 @@ def train(model, args):
     dataloader = DataLoader(dataset, shuffle=True, pin_memory=True, num_workers=0,batch_size=args.batch_size)
     num_train_samples = len(dataloader.dataset)
     
-    test_dataset = CustomDataset(split_type='test')
+    test_dataset = CustomDataset(split_type='val')
     test_dataloader = DataLoader(test_dataset, pin_memory=True, num_workers=0,batch_size=args.batch_size)
     
     # loss_fn = F.BCEWithLogitsLoss
