@@ -346,9 +346,8 @@ class CustomDataset (Dataset):
                     pass
                 except Exception as e: 
                     traceback.print_exc()
-                    # print(e)
-                finally:
                     problematic_videos.append(vid_num)
+                    # print(e)
             
             print(f'Problem in videos: {sorted(problematic_videos)}')
             print(f'len(problematic_videos): {len(problematic_videos)}')               
