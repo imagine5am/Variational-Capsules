@@ -28,11 +28,12 @@ def train(model, args):
     best_valid_acc = 0
     patience_counter = 0
     
-    dataset = CustomDataset()
-    dataloader = DataLoader(dataset, shuffle=True, pin_memory=True, num_workers=0,batch_size=args.batch_size)
+    dataset = CustomDataset(synth=True, icdar=True, roadtext=True)
+    dataloader = DataLoader(dataset, shuffle=True, pin_memory=True, num_workers=0, 
+                            batch_size=args.batch_size)
     num_train_samples = len(dataloader.dataset)
     
-    test_dataset = CustomDataset(split_type='val')
+    test_dataset = CustomDataset(split_type='val', roadtext=True)
     test_dataloader = DataLoader(test_dataset, pin_memory=True, num_workers=0,batch_size=args.batch_size)
     
     # loss_fn = F.BCEWithLogitsLoss

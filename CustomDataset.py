@@ -172,32 +172,29 @@ def process_roadtext_ann(ann_file):
 
 
 class CustomDataset (Dataset):
-    def __init__(self, split_type='train'):
+    def __init__(self, split_type='train', synth=False, icdar=False, roadtext=False):
         np.random.seed(7)
         
-        if split_type == 'train':
-            icdar_data = self.load_icdar_data(split_type)
-            print(f'len(icdar_data): {len(icdar_data)}')
-            
+        self.data = []
+        synth_data, icdar_data, roadtext_data = [], [], []
+        
+        if synth:
             synth_data = self.load_synth_data()
             print(f'len(synth_data): {len(synth_data)}')
+            self.data += synth_data
             
-            if DEBUG:
-                self.debug_data(synth_data=synth_data, icdar_data=icdar_data)# , roadtext_data=roadtext_data)
-
-            self.data = synth_data + icdar_data # + roadtext_data
-            
-        else: 
-            
+        if icdar:
+            icdar_data = self.load_icdar_data(split_type)
+            print(f'len(icdar_data): {len(icdar_data)}')
+            self.data += icdar_data
+        
+        if roadtext:
             roadtext_data = self.load_roadtext_data(split_type)
             print(f'len(roadtext_data): {len(roadtext_data)}')
-            
-            if DEBUG:
-                self.debug_data(roadtext_data=roadtext_data)
-                # self.debug_data(icdar_data=icdar_data, roadtext_data=roadtext_data)
-                
-            self.data = roadtext_data
-            # self.data = icdar_data + roadtext_data
+            self.data += roadtext_data
+        
+        if DEBUG:
+            self.debug_data(synth_data=synth_data, icdar_data=icdar_data, roadtext_data=roadtext_data)
         
         random.shuffle(self.data)
        
@@ -303,7 +300,7 @@ class CustomDataset (Dataset):
         video_dir = os.path.join('/mnt/data/Rohit/VideoCapsNet/data/RoadText-1K', split_type)
         
         if split_type == 'train':
-            selection_ratio = 0.25
+            selection_ratio = 0.2
         else:
             selection_ratio = 1
         
@@ -342,15 +339,14 @@ class CustomDataset (Dataset):
                             mask = np.zeros((out_h, out_w, 1), dtype=np.uint8)
 
                         retVal.append((frame, mask, 'roadtext')) 
-                except ValueError:
-                    pass
                 except Exception as e: 
                     traceback.print_exc()
                     problematic_videos.append(vid_num)
                     # print(e)
             
-            print(f'Problem in videos: {sorted(problematic_videos)}')
-            print(f'len(problematic_videos): {len(problematic_videos)}')               
+            if problematic_videos:
+                print(f'Problem in videos: {sorted(problematic_videos)}')
+                print(f'len(problematic_videos): {len(problematic_videos)}')               
         
         return retVal
     
