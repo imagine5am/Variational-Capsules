@@ -178,7 +178,7 @@ class CustomDataset (Dataset):
         self.data = []
         synth_data, icdar_data, roadtext_data = [], [], []
         
-        if synth:
+        if synth and split_type == 'train':
             synth_data = self.load_synth_data()
             print(f'len(synth_data): {len(synth_data)}')
             self.data += synth_data
