@@ -87,9 +87,9 @@ def train(model, args):
         if (epoch+1) % 5 == 0:
             del dataset, dataloader
             
-            dataset = CustomDataset()
-            dataloader = DataLoader(dataset, shuffle=True, pin_memory=True, 
-                                          num_workers=0, batch_size=args.batch_size)
+            dataset = CustomDataset(roadtext=True)
+            dataloader = DataLoader(dataset, shuffle=True, pin_memory=True, num_workers=0, 
+                                    batch_size=args.batch_size)
             num_train_samples = len(dataloader.dataset)
         
         if (epoch+1) % 5 == 0:
