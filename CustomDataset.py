@@ -255,7 +255,7 @@ class CustomDataset (Dataset):
             icdar_loc = '/mnt/data/Rohit/ICDARVideoDataset/text_in_Video/ch3_train/'
             selection_ratio = 0.5
         
-        elif split_type=='test':
+        elif split_type=='test' or split_type=='val':
             
             print('Loading ICDAR test data...')
             icdar_loc = '/mnt/data/Rohit/ICDARVideoDataset/text_in_Video/ch3_test/'
@@ -397,8 +397,9 @@ class CustomDataset (Dataset):
                     
 
 if __name__ == "__main__":
-    DEBUG = True
+    DEBUG = False
     
-    dataset = CustomDataset(split_type='test')
+    dataset = CustomDataset(split_type='val', roadtext=True)
+    print(f'len(dataset): {len(dataset)}')
     
         
