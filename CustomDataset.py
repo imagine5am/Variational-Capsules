@@ -397,9 +397,9 @@ class CustomDataset (Dataset):
                     
 
 if __name__ == "__main__":
-    DEBUG = False
+    DEBUG = True
     
-    dataset = CustomDataset(split_type='val', roadtext=True)
+    dataset = CustomDataset(split_type='train', roadtext=True)
     print(f'len(dataset): {len(dataset)}')
     
         
