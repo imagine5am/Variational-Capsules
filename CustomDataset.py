@@ -325,7 +325,7 @@ class CustomDataset (Dataset):
 
                     # chosen_frames = np.random.choice(num_frames, int(selection_ratio * num_frames), replace=False)
                     num_annotated_frames = len(ann[vid_num].keys())
-                    chosen_frames = random.sample(ann[vid_num].keys(), num_annotated_frames*selection_ratio)
+                    chosen_frames = random.sample(ann[vid_num].keys(), int(num_annotated_frames * selection_ratio))
 
                     for idx in chosen_frames:
                         frame = resize_and_pad((h, w), video_orig[idx])
