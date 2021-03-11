@@ -155,14 +155,15 @@ def process_roadtext_ann(ann_file):
     for item in data:
         if item['labels']:
             video_num = int(item['videoName'])
-            x1 = re.search(r'\d+\.jpg', item['name']) # "name": "dataset_imgs/99-0000280.jpg",
-            frame_num = int(item['name'][x1.start():x1.end()-4]) - 1
-
+            # x1 = re.search(r'\d+\.jpg', item['name']) # "name": "dataset_imgs/99-0000280.jpg",
+            # frame_num = int(item['name'][x1.start():x1.end()-4]) - 1
+            frame_num = item['index']
+            
             if video_num not in data_dict:
                 data_dict[video_num] = {}
 
             data_dict[video_num][frame_num] = {}
-            
+
             for label in item['labels']:
                 box = label['box2d']
                 pts = [round(box['x1']), round(box['y1']), round(box['x2']), round(box['y2'])]
@@ -322,7 +323,9 @@ class CustomDataset (Dataset):
                     video_orig = skvideo.io.vread(vid_file)
                     num_frames, h, w, _ = video_orig.shape
 
-                    chosen_frames = np.random.choice(num_frames, int(selection_ratio * num_frames), replace=False)
+                    # chosen_frames = np.random.choice(num_frames, int(selection_ratio * num_frames), replace=False)
+                    num_annotated_frames = len(ann[vid_num].keys())
+                    chosen_frames = random.sample(ann[vid_num].keys(), num_annotated_frames*selection_ratio)
 
                     for idx in chosen_frames:
                         frame = resize_and_pad((h, w), video_orig[idx])
