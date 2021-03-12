@@ -301,7 +301,7 @@ class CustomDataset (Dataset):
         video_dir = os.path.join('/mnt/data/Rohit/VideoCapsNet/data/RoadText-1K', split_type)
         
         if split_type == 'train':
-            selection_ratio = 0.4
+            selection_ratio = 0.2
         else:
             selection_ratio = 1
         
